@@ -1,0 +1,88 @@
+[
+  [
+    {
+      "formula": "C6H6",
+      "name": {
+        "en": "Benzene",
+        "nl": "Benzeen"
+      }
+    },
+    {
+      "formula": "C7H8",
+      "name": {
+        "en": "Toluene",
+        "nl": "Tolueen"
+      }
+    },
+    {
+      "formula": "C8H10",
+      "name": {
+        "en": "Xylene",
+        "nl": "Xyleen"
+      }
+    },
+    {
+      "formula": "CO",
+      "name": {
+        "en": "Carbon monoxide (CO)",
+        "nl": "Koolmonoxide (CO)"
+      }
+    },
+    {
+      "formula": "H2S",
+      "name": {
+        "en": "Hydrogen Sulfide (H2S)",
+        "nl": "Waterstofsulfide (H2S)"
+      }
+    },
+    {
+      "formula": "NH3",
+      "name": {
+        "en": "Ammonia (NH3)",
+        "nl": "Ammoniak (NH3)"
+      }
+    },
+    {
+      "formula": "NO",
+      "name": {
+        "en": "Nitrogen monoxide (NO)",
+        "nl": "Stikstofmonoxide (NO)"
+      }
+    },
+    {
+      "formula": "NO2",
+      "name": {
+        "en": "Nitrogen dioxide (NO2)",
+        "nl": "Stikstofdioxide (NO2)"
+      }
+    },
+    {
+      "formula": "PM10",
+      "name": {
+        "en": "Particulate matter (PM10)",
+        "nl": "Fijn stof (PM10)"
+      }
+    },
+    {
+      "formula": "PM25",
+      "name": {
+        "en": "Particulate matter (PM2.5)",
+        "nl": "Fijn stof (PM2.5)"
+      }
+    },
+    {
+      "formula": "PS",
+      "name": {
+        "en": "Ultra fine particles (UFP)",
+        "nl": "Ultra fine particles (UFP)"
+      }
+    },
+    {
+      "formula": "SO2",
+      "name": {
+        "en": "Sulphur dioxide (SO2)",
+        "nl": "Zwaveldioxide (SO2)"
+      }
+    }
+  ]
+]
