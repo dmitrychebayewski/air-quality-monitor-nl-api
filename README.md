@@ -1,18 +1,22 @@
 # Bolierplate API project written in Kotlin using coroutines 🛠
 The API is deployed on Vert.X
 ## Purpose
-Learning to build useful API using the well-known [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/) 
-```
-The website Luchtmeetnet is an initiative of the Ministry of Infrastructure and the Environment, the National Institute of Public Health and the Environment (RIVM), GGD Amsterdam, EPA for the greater Rotterdam area (DCMR), the Province of Limburg, EPA's middle and western Brabant (OMWB) and EPA region Arnhem (ODRA). The website displays the measured air quality on several measuring stations in the Netherlands and the calculated air quality maps.
+The project is a polygon for learning to build an API using Vert.X, Kotlin coroutines
+and of course learning integration tests good practice.
+I use the well-known [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/) for learning purpose,
+and I intend comparing testNG + Hamcrest and [REST-assured](https://github.com/rest-assured/rest-assured) frameworks
 
+The website Luchtmeetnet is an initiative of the Ministry of Infrastructure and the Environment, 
+the National Institute of Public Health and the Environment (RIVM), GGD Amsterdam, EPA for the greater Rotterdam area (DCMR), 
+the Province of Limburg, EPA's middle and western Brabant (OMWB) and EPA region Arnhem (ODRA). 
+The website displays the measured air quality on several measuring stations in the Netherlands and the calculated air quality maps.
 This API grants direct access to detailed information of the stations and the measurements made there.
-```
 
 ## Software Stack
-* Java JDK 8+/Kotlin as main execution environment
-* Gradle 6
-* Cucumber 5
-* Docker is potentially supported if you intend trying out the demo on Mac / Linux 
+* Java JDK 8+/Kotlin as main execution environment;
+* Gradle 6 as main build tool;
+* testNG as testing framework;
+* (TODO) Docker is potentially supported if you intend trying out the demo on Mac / Linux 
 
 ## Setup
 You need to have Java 8 SDK set up.
