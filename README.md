@@ -2,16 +2,15 @@
 The API is deployed on Vert.X
 ## Purpose
 Learning to build useful API using the well-known [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/) 
-```
-The website Luchtmeetnet is an initiative of the Ministry of Infrastructure and the Environment, the National Institute of Public Health and the Environment (RIVM), GGD Amsterdam, EPA for the greater Rotterdam area (DCMR), the Province of Limburg, EPA's middle and western Brabant (OMWB) and EPA region Arnhem (ODRA). The website displays the measured air quality on several measuring stations in the Netherlands and the calculated air quality maps.
-
+The website Luchtmeetnet is an initiative of the Ministry of Infrastructure and the Environment, 
+the National Institute of Public Health and the Environment (RIVM), GGD Amsterdam, EPA for the greater Rotterdam area (DCMR), 
+the Province of Limburg, EPA's middle and western Brabant (OMWB) and EPA region Arnhem (ODRA). 
+The website displays the measured air quality on several measuring stations in the Netherlands and the calculated air quality maps.
 This API grants direct access to detailed information of the stations and the measurements made there.
-```
 
 ## Software Stack
 * Java JDK 8+/Kotlin as main execution environment
 * Gradle 6
-* Cucumber 5
 * Docker is potentially supported if you intend trying out the demo on Mac / Linux 
 
 ## Setup
