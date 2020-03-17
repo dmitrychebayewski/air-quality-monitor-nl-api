@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
 import ru.gildor.coroutines.retrofit.await
+import java.util.concurrent.atomic.AtomicBoolean
 
 class StationsHandler {
     private val logger = LoggerFactory.getLogger("VertxServer")
@@ -27,21 +28,33 @@ class StationsHandler {
 
     private suspend fun getStations(ctx: RoutingContext) {
         val response = ctx.response()
+        val location = ctx.pathParam("location").toLowerCase()
         response.isChunked = true
         val firstPage = StationsService().getStations(1).await()
         val pagination = firstPage.pagination
         val mutex = Mutex()
+        val flag = AtomicBoolean(false)
         mutex.withLock {
             response.write("[")
-            response.write(Json.encode(firstPage.data))
+            val stations = firstPage.data.filter { it.location.toLowerCase().contains(location) }
+            if (stations.isNotEmpty()) {
+                response.write(Json.encode(stations))
+                flag.set(true)
+            }
         }
         getSafeLaunchRanges(pagination.last_page).forEach {
             it.map {
                 CoroutineScope(Dispatchers.Default).async {
-                    val station = StationsService().getStations(it).await()
+                    val stations = StationsService().getStations(it).await()
+                    val locatedStations = stations.data.filter { it.location.toLowerCase().contains(location) }
                     mutex.withLock {
-                        response.write(",")
-                        response.write(Json.encode(station.data))
+                        if (locatedStations.isNotEmpty()) {
+                            if (flag.get()) response.write(",")
+                            response.write(Json.encode(locatedStations))
+
+                        } else {
+                            flag.set(false)
+                        }
                     }
                 }
             }.awaitAll()

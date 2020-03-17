@@ -9,8 +9,8 @@ import org.testng.annotations.Test
 import java.io.ByteArrayOutputStream
 
 class StationsServiceIT : AbstractHttpServiceIT() {
-
-    val STATIONS_SERVICE_URL = "${TEST_API_ENDPOINT}/stations"
+    val LOCATION = "amsterdam"
+    val STATIONS_SERVICE_URL = "${TEST_API_ENDPOINT}/stations/${LOCATION}"
 
     @BeforeTest
     fun setUp() {
@@ -30,7 +30,8 @@ class StationsServiceIT : AbstractHttpServiceIT() {
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val stations = Gson().fromJson(content.toString(), Array<Array<Data>>::class.java)
-        Assert.assertEquals(stations.size, 4)
+        stations.forEach { part->Assert.assertTrue(part.any { it.location.toLowerCase().contains(LOCATION) })}
+
     }
 
     @AfterTest

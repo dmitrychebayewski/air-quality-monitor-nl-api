@@ -11,7 +11,7 @@ import retrofit2.http.Query
 import java.time.Duration
 
 
-class AirMeasurementsService {
+class MeasurementsService {
 
     fun getMeasurement(stationId: List<String>, formula: String, startTime: String, endTime: String, page: Int): Call<PagedMeasurements> {
         return Api.create().getMeasurements(startTime,

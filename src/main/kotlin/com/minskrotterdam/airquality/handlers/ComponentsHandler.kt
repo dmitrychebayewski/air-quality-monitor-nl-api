@@ -15,7 +15,7 @@ import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
 import ru.gildor.coroutines.retrofit.await
 
-class PollutantComponentsHandler {
+class ComponentsHandler {
     private val logger = LoggerFactory.getLogger("VertxServer")
 
     suspend fun pollutantComponentsHandler(ctx: RoutingContext) {
@@ -33,7 +33,8 @@ class PollutantComponentsHandler {
         val mutex = Mutex()
         mutex.withLock {
             response.write("[")
-            response.write(Json.encode(firstPage.data))
+            val groupBy = firstPage.data.groupBy { it.formula }
+            response.write(Json.encode(groupBy))
         }
         getSafeLaunchRanges(pagination.last_page).forEach {
             it.map {
@@ -41,7 +42,7 @@ class PollutantComponentsHandler {
                     val measurement = AirPollutantsService().getPollutants(it).await()
                     mutex.withLock {
                         response.write(",")
-                        response.write(Json.encode(measurement.data))
+                        response.write(Json.encode(measurement.data.groupBy { it.formula }))
                     }
                 }
             }.awaitAll()

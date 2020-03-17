@@ -2,7 +2,8 @@ package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
-import com.minskrotterdam.airquality.services.AirMeasurementsService
+import com.minskrotterdam.airquality.models.measurements.Data
+import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
@@ -17,16 +18,7 @@ import ru.gildor.coroutines.retrofit.await
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class AirMeasurementsHandler {
-
-    private fun extractStationId(requestParameters: MultiMap): List<String> {
-        val stationId = requestParameters.getAll("station_number")
-        if (stationId.isEmpty()) {
-            //return listOf("NL01487", "NL49014", "NL01492")
-            return emptyList()
-        }
-        return stationId
-    }
+class StationMeasurementsHandler {
 
     private fun extractFormula(requestParameters: MultiMap?): String {
         val formula = requestParameters?.get("formula")
@@ -52,40 +44,52 @@ class AirMeasurementsHandler {
         return startTime
     }
 
-
     suspend fun airMeasurementsHandler(ctx: RoutingContext) {
         safeLaunch(ctx) {
-
             ctx.response().headers().set("Content-Type", "application/json")
-            getMeasurements(ctx)
+            getAggregatedMeasurements(ctx)
         }
     }
 
-    private suspend fun getMeasurements(ctx: RoutingContext) {
+    private suspend fun getAggregatedMeasurements(ctx: RoutingContext) {
         val response = ctx.response()
         val requestParameters = ctx.request().params()
-        val stationId = extractStationId(requestParameters)
+        val stationId = ctx.pathParam("station_number")
         val formula = extractFormula(requestParameters)
         val endTime = extractEndTime(requestParameters)
         val startTime = extractStartTime(requestParameters)
         response.isChunked = true
-        val firstPage = AirMeasurementsService().getMeasurement(stationId, formula, startTime, endTime, 1).await()
+        val firstPage = MeasurementsService().getMeasurement(listOf(stationId), formula, startTime, endTime, 1).await()
         val pagination = firstPage.pagination
+        val message = firstPage.data.groupBy { it.formula }.toSortedMap().values.map { it ->
+            it.reduce { ac, data ->
+                Data(ac.formula,
+                        ac.station_number,
+                        ac.timestamp_measured, maxOf(ac.value, data.value))
+            }
+        }
         val mutex = Mutex()
         mutex.withLock {
             response.write("[")
-            response.write(Json.encode(firstPage))
+            response.write(Json.encode(message))
         }
         //When too many coroutines are waiting for server response concurrently, the server may respond with 504 code
         //Use segmentation to smaller ranges as workaround
-        getSafeLaunchRanges(pagination.last_page).forEach {
+        getSafeLaunchRanges(pagination.last_page).forEach { it ->
             it.map {
                 CoroutineScope(Dispatchers.Default).async {
-                    val measurement = AirMeasurementsService().getMeasurement(stationId, formula, startTime,
+                    val measurement = MeasurementsService().getMeasurement(listOf(stationId), formula, startTime,
                             endTime, it).await()
+                    val message = measurement.data.groupBy { it.formula }.toSortedMap().values.map { it ->
+                        it.reduce { it, data ->
+                            Data(it.formula,
+                                    it.station_number,
+                                    it.timestamp_measured, maxOf(it.value, data.value))
+                        }
+                    }
                     mutex.withLock {
                         response.write(",")
-                        response.write(Json.encode(measurement))
+                        response.write(Json.encode(message))
                     }
                 }
             }.awaitAll()
