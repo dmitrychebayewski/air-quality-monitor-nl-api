@@ -1,0 +1,92 @@
+{
+  "data": {
+    "formula": "NO2",
+    "description": {
+      "NL": "{\"object\":\"value\",\"document\":{\"object\":\"document\",\"data\":{},\"nodes\":[{\"object\":\"block\",\"type\":\"paragraph\",\"data\":{},\"nodes\":[{\"object\":\"text\",\"text\":\"De hoogste concentraties stikstofdioxide (NO2) komen voor tijdens de ochtend- en avondspits. Deze stof komt vrij door het (weg)verkeer, energieproductie en industrie. Daarnaast ontstaat NO2 uit een reactie tussen stikstofmonoxide en ozon. Het weer en de verkeersdrukte hebben grote invloed op de concentratie. De wettelijke norm is een jaargemiddelde van 40 (\u03bcg/m3)\",\"marks\":[]}]},{\"object\":\"block\",\"type\":\"paragraph\",\"data\":{},\"nodes\":[{\"object\":\"text\",\"text\":\"\",\"marks\":[]}]}]}}",
+      "EN": "{\"object\":\"value\",\"document\":{\"object\":\"document\",\"data\":{},\"nodes\":[{\"object\":\"block\",\"type\":\"paragraph\",\"data\":{},\"nodes\":[{\"object\":\"text\",\"text\":\"The highest concentrations of NO2 exist during the morning and evening rush hour. NOx is emitted when fuel is being burned e.g. in transport, industrial processes and power generation. NO2 is formed in a reaction between nitric oxide (NO) and ozone (O3). The weather and traffic influence the concentrations substantially. The yearly average limit value is 40 (\u03bcg/m3).\",\"marks\":[]}]},{\"object\":\"block\",\"type\":\"paragraph\",\"data\":{},\"nodes\":[{\"object\":\"text\",\"text\":\"\",\"marks\":[]}]}]}}"
+    },
+    "name": {
+      "NL": "Stikstofdioxide (NO2)",
+      "EN": "Nitrogen dioxide (NO2)"
+    },
+    "limits": [
+      {
+        "rating": 1,
+        "lowerband": null,
+        "upperband": 10,
+        "color": "#96c8ff",
+        "type": "website"
+      },
+      {
+        "rating": 2,
+        "lowerband": 10,
+        "upperband": 20,
+        "color": "#ffffc8",
+        "type": "website"
+      },
+      {
+        "rating": 3,
+        "lowerband": 20,
+        "upperband": 30,
+        "color": "#ffc800",
+        "type": "website"
+      },
+      {
+        "rating": 4,
+        "lowerband": 30,
+        "upperband": 45,
+        "color": "#ff6464",
+        "type": "website"
+      },
+      {
+        "rating": 5,
+        "lowerband": 45,
+        "upperband": 60,
+        "color": "#ffffc8",
+        "type": "website"
+      },
+      {
+        "rating": 6,
+        "lowerband": 60,
+        "upperband": 75,
+        "color": "#ffffc8",
+        "type": "website"
+      },
+      {
+        "rating": 7,
+        "lowerband": 75,
+        "upperband": 100,
+        "color": "#ffc800",
+        "type": "website"
+      },
+      {
+        "rating": 8,
+        "lowerband": 100,
+        "upperband": 125,
+        "color": "#ffc800",
+        "type": "website"
+      },
+      {
+        "rating": 9,
+        "lowerband": 125,
+        "upperband": 150,
+        "color": "#ff6464",
+        "type": "website"
+      },
+      {
+        "rating": 10,
+        "lowerband": 150,
+        "upperband": 200,
+        "color": "#ff6464",
+        "type": "website"
+      },
+      {
+        "rating": 11,
+        "lowerband": 200,
+        "upperband": 10000,
+        "color": "#c864ff",
+        "type": "website"
+      }
+    ]
+  }
+}

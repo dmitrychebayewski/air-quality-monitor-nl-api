@@ -31,7 +31,7 @@ class AirPollutantsServiceIT : AbstractHttpServiceIT() {
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val typeOMap: Type = object : TypeToken<Array<Map<String, List<Data>>>>() {}.type
-        val pollutants:Array<Map<String, List<Data>>> = Gson().fromJson(content.toString(), typeOMap)
+        val pollutants: Array<Map<String, List<Data>>> = Gson().fromJson(content.toString(), typeOMap)
         Assert.assertEquals(pollutants.size, 1)
     }
 

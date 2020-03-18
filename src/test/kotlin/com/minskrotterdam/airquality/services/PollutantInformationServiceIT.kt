@@ -1,16 +1,16 @@
 package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
-import com.minskrotterdam.airquality.models.stations.Data
+import com.minskrotterdam.airquality.models.component_info.ComponentInfo
 import org.testng.Assert
 import org.testng.annotations.AfterTest
 import org.testng.annotations.BeforeTest
 import org.testng.annotations.Test
 import java.io.ByteArrayOutputStream
 
-class StationsServiceIT : AbstractHttpServiceIT() {
-    val LOCATION = "amsterdam"
-    val STATIONS_SERVICE_URL = "${TEST_API_ENDPOINT}/stations/${LOCATION}"
+class PollutantInformationServiceIT : AbstractHttpServiceIT() {
+    val FORMULA = "NO2"
+    val POLLUTANT_INFO_SERVICE_URL = "${TEST_API_ENDPOINT}/components/${FORMULA}"
 
     @BeforeTest
     fun setUp() {
@@ -19,19 +19,18 @@ class StationsServiceIT : AbstractHttpServiceIT() {
 
     @Test
     fun testGetStationsGivingValidResponse() {
-        val response = httpGet(STATIONS_SERVICE_URL)
+        val response = httpGet(POLLUTANT_INFO_SERVICE_URL)
         Assert.assertEquals(response.statusLine.statusCode, 200)
         Assert.assertEquals(response.getFirstHeader("content-type").value, "application/json")
     }
 
     @Test
     fun testGetStationsGivingValidResponseBody() {
-        val entity = httpGet(STATIONS_SERVICE_URL).entity
+        val entity = httpGet(POLLUTANT_INFO_SERVICE_URL).entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
-        val stations = Gson().fromJson(content.toString(), Array<Data>::class.java)
-        stations.forEach { station -> Assert.assertTrue(station.location.toLowerCase().contains(LOCATION))}
-
+        val componentInfo = Gson().fromJson(content.toString(), ComponentInfo::class.java)
+        Assert.assertEquals(componentInfo.data.formula, FORMULA)
     }
 
     @AfterTest

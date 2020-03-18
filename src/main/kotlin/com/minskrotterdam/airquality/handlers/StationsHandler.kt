@@ -2,6 +2,7 @@ package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
+import com.minskrotterdam.airquality.models.stations.Data
 import com.minskrotterdam.airquality.services.StationsService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
@@ -33,34 +34,28 @@ class StationsHandler {
         val firstPage = StationsService().getStations(1).await()
         val pagination = firstPage.pagination
         val mutex = Mutex()
-        val flag = AtomicBoolean(false)
+        val result: MutableList<Data> = mutableListOf()
         mutex.withLock {
-            response.write("[")
             val stations = firstPage.data.filter { it.location.toLowerCase().contains(location) }
             if (stations.isNotEmpty()) {
-                response.write(Json.encode(stations))
-                flag.set(true)
+                result.addAll(stations)
             }
         }
-        getSafeLaunchRanges(pagination.last_page).forEach {
-            it.map {
+        getSafeLaunchRanges(pagination.last_page).forEach { intRange ->
+            intRange.map {
                 CoroutineScope(Dispatchers.Default).async {
                     val stations = StationsService().getStations(it).await()
                     val locatedStations = stations.data.filter { it.location.toLowerCase().contains(location) }
                     mutex.withLock {
                         if (locatedStations.isNotEmpty()) {
-                            if (flag.get()) response.write(",")
-                            response.write(Json.encode(locatedStations))
-
-                        } else {
-                            flag.set(false)
+                            result.addAll(locatedStations)
                         }
                     }
                 }
             }.awaitAll()
         }
         mutex.withLock {
-            response.write("]")
+            response.write(Json.encode(result))
             response.endAwait()
         }
     }

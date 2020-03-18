@@ -12,9 +12,10 @@ import java.lang.reflect.Type
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class AirMeasurementsServiceIT : AbstractHttpServiceIT() {
+class MeasurementsServiceIT : AbstractHttpServiceIT() {
 
     private val MEASUREMENTS_SERVICE_URL = "${TEST_API_ENDPOINT}/measurements?station_number=NL01487"
+    private val AGGR_MEASUREMENTS_SERVICE_URL = "${TEST_API_ENDPOINT}/measurements/NL01487"
     private val start = Instant.now().truncatedTo(ChronoUnit.DAYS).toString()
     private val end = Instant.now().truncatedTo(ChronoUnit.SECONDS).toString()
 
@@ -37,6 +38,16 @@ class AirMeasurementsServiceIT : AbstractHttpServiceIT() {
         val typeOMap: Type = object : TypeToken<Array<Map<String, List<Data>>>>() {}.type
         val measurements: Array<Map<String, List<Data>>> = Gson().fromJson(content.toString(), typeOMap)
         Assert.assertTrue(measurements[0].keys.isNotEmpty())
+    }
+
+    @Test
+    fun testGetAggregatedMeasurementsGivingValidBody() {
+        val entity = httpGet("$AGGR_MEASUREMENTS_SERVICE_URL").entity
+        val content = ByteArrayOutputStream()
+        entity.writeTo(content)
+        val typeOMap: Type = object : TypeToken<Array<List<Data>>>() {}.type
+        val measurements: Array<List<Data>> = Gson().fromJson(content.toString(), typeOMap)
+        Assert.assertTrue(measurements[0].isNotEmpty())
     }
 
     @AfterTest
