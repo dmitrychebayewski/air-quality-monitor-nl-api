@@ -1,8 +1,9 @@
 package com.minskrotterdam.airquality.handlers
 
+import com.minskrotterdam.airquality.common.aggregateByComponent
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
-import com.minskrotterdam.airquality.models.measurements.Data
+import com.minskrotterdam.airquality.metadata.RegionalStationsSegments
 import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
@@ -19,6 +20,31 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class StationMeasurementsHandler {
+    enum class Aggregate {
+        MAX,
+        MIN,
+    }
+
+    private fun extractAggregator(requestParameters: MultiMap): (Double, Double) -> Double {
+        when (requestParameters.get("aggr")) {
+            Aggregate.MAX.name.toLowerCase() -> return { a: Double, b: Double -> maxOf(a, b) }
+            Aggregate.MIN.name.toLowerCase() -> return { a: Double, b: Double -> minOf(a, b) }
+            else -> return { a: Double, b: Double -> "%.1f".format((a + b) / 2).toDouble() }
+        }
+    }
+
+    private fun extractStationNumbers(ctx: RoutingContext): List<String>? {
+        val regio = ctx.pathParam("region")
+        if(regio.isNullOrEmpty()) {
+            val stationId = ctx.pathParam("station_number")
+            return if (stationId.isNotEmpty())
+                listOf(stationId)
+            else RegionalStationsSegments.segments["ZP"];
+        }
+        else {
+            return RegionalStationsSegments.segments.getOrDefault(regio.toLowerCase(), RegionalStationsSegments.segments["zp"])
+        }
+    }
 
     private fun extractFormula(requestParameters: MultiMap?): String {
         val formula = requestParameters?.get("formula")
@@ -51,51 +77,44 @@ class StationMeasurementsHandler {
         }
     }
 
+    suspend fun aggregatedAirMeasurementsHandler(ctx: RoutingContext) {
+        safeLaunch(ctx) {
+            ctx.response().headers().set("Content-Type", "application/json")
+            getAggregatedMeasurements(ctx)
+        }
+    }
+
     private suspend fun getAggregatedMeasurements(ctx: RoutingContext) {
         val response = ctx.response()
         val requestParameters = ctx.request().params()
-        val stationId = ctx.pathParam("station_number")
+        val stationId = extractStationNumbers(ctx)
+
         val formula = extractFormula(requestParameters)
         val endTime = extractEndTime(requestParameters)
         val startTime = extractStartTime(requestParameters)
         response.isChunked = true
-        val firstPage = MeasurementsService().getMeasurement(listOf(stationId), formula, startTime, endTime, 1).await()
+        val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
         val pagination = firstPage.pagination
-        val message = firstPage.data.groupBy { it.formula }.toSortedMap().values.map { it ->
-            it.reduce { ac, data ->
-                Data(ac.formula,
-                        ac.station_number,
-                        ac.timestamp_measured, maxOf(ac.value, data.value))
-            }
-        }
+        val aggregatorFun = extractAggregator(requestParameters)
+        val firstResult = firstPage.data.aggregateByComponent(aggregatorFun).toMutableList()
         val mutex = Mutex()
-        mutex.withLock {
-            response.write("[")
-            response.write(Json.encode(message))
-        }
         //When too many coroutines are waiting for server response concurrently, the server may respond with 504 code
         //Use segmentation to smaller ranges as workaround
         getSafeLaunchRanges(pagination.last_page).forEach { it ->
             it.map {
                 CoroutineScope(Dispatchers.Default).async {
-                    val measurement = MeasurementsService().getMeasurement(listOf(stationId), formula, startTime,
+                    val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                             endTime, it).await()
-                    val message = measurement.data.groupBy { it.formula }.toSortedMap().values.map { it ->
-                        it.reduce { it, data ->
-                            Data(it.formula,
-                                    it.station_number,
-                                    it.timestamp_measured, maxOf(it.value, data.value))
-                        }
-                    }
+                    val message = measurement.data.aggregateByComponent(aggregatorFun)
                     mutex.withLock {
-                        response.write(",")
-                        response.write(Json.encode(message))
+                        firstResult.addAll(message)
                     }
                 }
             }.awaitAll()
         }
+        val result = firstResult.aggregateByComponent(aggregatorFun)
         mutex.withLock {
-            response.write("]")
+            response.write(Json.encode(result))
             response.endAwait()
         }
     }

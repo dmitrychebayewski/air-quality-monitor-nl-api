@@ -1,6 +1,7 @@
 package com.minskrotterdam.airquality.common
 
 import com.minskrotterdam.airquality.models.CommonServiceError
+import com.minskrotterdam.airquality.models.measurements.Data
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.Json
 import io.vertx.ext.web.Route
@@ -9,16 +10,11 @@ import io.vertx.kotlin.coroutines.dispatcher
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.function.BiFunction
 
 fun HttpServerResponse.endWithJson(obj: Any?, statusCode: Int = 200) {
     setStatusCode(statusCode)
     putHeader("Content-Type", "application/json; charset=utf-8").end(Json.encodePrettily(obj))
-}
-
-fun <T> MutableList<T>.updateWhere(finder: (T) -> Boolean, newValue: T): Int {
-    val idx = indexOf(find(finder))
-    if (idx > -1) set(idx, newValue)
-    return idx
 }
 
 fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) {
@@ -65,3 +61,15 @@ fun getSafeLaunchRanges(pages: Int): List<IntRange> {
 private fun MutableList<IntRange>.checkAndInclude(range: IntRange) {
     if (range.first <= range.last) add(range)
 }
+
+fun List<Data>.aggregateByComponent(reducer: (Double, Double) -> Double): List<Data> {
+    return groupBy { it.formula }.toSortedMap().values.map { it ->
+        it.reduce { ac, data ->
+            Data(ac.formula,
+                    ac.station_number,
+                    ac.timestamp_measured, reducer.invoke(ac.value, data.value))
+        }
+    }
+}
+
+

@@ -2,6 +2,7 @@ package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.minskrotterdam.airquality.metadata.RegionalStationsSegments
 import com.minskrotterdam.airquality.models.measurements.Data
 import org.testng.Assert
 import org.testng.annotations.AfterTest
@@ -26,6 +27,7 @@ class MeasurementsServiceIT : AbstractHttpServiceIT() {
 
     @Test
     fun testGetMeasurementsGivingValidResponse() {
+        val list = RegionalStationsSegments.segments["ZP"]
         val response = httpGet(MEASUREMENTS_SERVICE_URL)
         Assert.assertEquals(response.statusLine.statusCode, 200)
     }
@@ -45,9 +47,9 @@ class MeasurementsServiceIT : AbstractHttpServiceIT() {
         val entity = httpGet("$AGGR_MEASUREMENTS_SERVICE_URL").entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
-        val typeOMap: Type = object : TypeToken<Array<List<Data>>>() {}.type
-        val measurements: Array<List<Data>> = Gson().fromJson(content.toString(), typeOMap)
-        Assert.assertTrue(measurements[0].isNotEmpty())
+        val typeOMap: Type = object : TypeToken<List<Data>>() {}.type
+        val measurements: List<Data> = Gson().fromJson(content.toString(), typeOMap)
+        Assert.assertNotNull(measurements[0].formula)
     }
 
     @AfterTest

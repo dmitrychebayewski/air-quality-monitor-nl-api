@@ -18,6 +18,8 @@ class TestRoutes(private val vertx: Vertx) {
             get("$API_ENDPOINT/components/:formula").coroutineHandler { ComponentInfoHandler().pollutantComponentInfoHandler(it) }
             get("$API_ENDPOINT/measurements").coroutineHandler { MeasurementsHandler().airMeasurementsHandler(it) }
             get("$API_ENDPOINT/measurements/:station_number").coroutineHandler { StationMeasurementsHandler().airMeasurementsHandler(it) }
+            get("$API_ENDPOINT/measurements/region/:name").coroutineHandler { StationMeasurementsHandler().airMeasurementsHandler(it) }
+
         }
     }
 }

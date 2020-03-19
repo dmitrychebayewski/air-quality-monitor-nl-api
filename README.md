@@ -47,7 +47,8 @@ Or build a Jar and run in production mode
 
 ## API ENDPOINTS
 * `/v1/api/measurements` - Sequences of air pollutants measurements taken from now back to 6 hours
-* `/v1/api/measurements/{station}` - Aggregated value (currently MAX) of each air pollutant measured from now back to to 6 hours by the {station}
+* `/v1/api/measurements/{station}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours by the {station}
+* `/v1/api/measurements/region/{region}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours in the {region} (zh, rd)
 * `/v1/api/components` - List of monitored air pollutants
 * `/v1/api/components/{formula}` - Air pollutant details, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
 * `/v1/api/stations` - List of stations daily monitoring the air quality in the Netherlands
