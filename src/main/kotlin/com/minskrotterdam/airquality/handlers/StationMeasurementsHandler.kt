@@ -39,7 +39,7 @@ class StationMeasurementsHandler {
     private fun extractStartTime(requestParameters: MultiMap): String {
         val startTime = requestParameters.get("start")
         if (startTime.isNullOrEmpty()) {
-            return Instant.now().truncatedTo(ChronoUnit.DAYS).toString()
+            return Instant.now().minus(6, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
         }
         return startTime
     }

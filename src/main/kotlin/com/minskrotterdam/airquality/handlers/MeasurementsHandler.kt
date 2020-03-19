@@ -18,12 +18,33 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class MeasurementsHandler {
+    private val zuidHollandStations = listOf("NL10404",
+            "NL10445",
+            "NL10446",
+            "NL53020",
+            "NL01496",
+            "NL01485",
+            "NL01491",
+            "NL01493",
+            "NL01487",
+            "NL01492",
+            "NL01488",
+            "NL10418",
+            "NL01484",
+            "NL10107",
+            "NL01494",
+            "NL10442",
+            "NL01495",
+            "NL01489",
+            "NL01912",
+            "NL10449",
+            "NL10437")
 
     private fun extractStationId(requestParameters: MultiMap): List<String> {
         val stationId = requestParameters.getAll("station_number")
         if (stationId.isEmpty()) {
-            //return listOf("NL01487", "NL49014", "NL01492")
-            return emptyList()
+
+            return zuidHollandStations
         }
         return stationId
     }
@@ -47,7 +68,7 @@ class MeasurementsHandler {
     private fun extractStartTime(requestParameters: MultiMap): String {
         val startTime = requestParameters.get("start")
         if (startTime.isNullOrEmpty()) {
-            return Instant.now().truncatedTo(ChronoUnit.DAYS).toString()
+            return Instant.now().minus(6, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
         }
         return startTime
     }
