@@ -19,7 +19,7 @@ import ru.gildor.coroutines.retrofit.await
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class StationMeasurementsHandler {
+class AggregatedMeasurementsHandler {
     enum class Aggregate {
         MAX,
         MIN,

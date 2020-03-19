@@ -17,8 +17,8 @@ class Routes(private val vertx: Vertx) {
             get("$API_ENDPOINT/components").coroutineHandler { ComponentsHandler().pollutantComponentsHandler(it) }
             get("$API_ENDPOINT/components/:formula").coroutineHandler { ComponentInfoHandler().pollutantComponentInfoHandler(it) }
             get("$API_ENDPOINT/measurements").coroutineHandler { MeasurementsHandler().airMeasurementsHandler(it) }
-            get("$API_ENDPOINT/measurements/:station_number").coroutineHandler { StationMeasurementsHandler().airMeasurementsHandler(it) }
-            get("$API_ENDPOINT/measurements/region/:region").coroutineHandler { StationMeasurementsHandler().aggregatedAirMeasurementsHandler(it) }
+            get("$API_ENDPOINT/measurements/:station_number").coroutineHandler { AggregatedMeasurementsHandler().airMeasurementsHandler(it) }
+            get("$API_ENDPOINT/measurements/region/:region").coroutineHandler { AggregatedMeasurementsHandler().aggregatedAirMeasurementsHandler(it) }
             route("/public/*").handler(configHandlers.staticHandler)
             route().handler { configHandlers.otherPageHandler(it) }
         }

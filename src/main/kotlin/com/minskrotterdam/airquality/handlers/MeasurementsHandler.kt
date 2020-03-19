@@ -2,6 +2,7 @@ package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
+import com.minskrotterdam.airquality.metadata.RegionalStationsSegments
 import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
@@ -18,33 +19,12 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class MeasurementsHandler {
-    private val zuidHollandStations = listOf("NL10404",
-            "NL10445",
-            "NL10446",
-            "NL53020",
-            "NL01496",
-            "NL01485",
-            "NL01491",
-            "NL01493",
-            "NL01487",
-            "NL01492",
-            "NL01488",
-            "NL10418",
-            "NL01484",
-            "NL10107",
-            "NL01494",
-            "NL10442",
-            "NL01495",
-            "NL01489",
-            "NL01912",
-            "NL10449",
-            "NL10437")
 
-    private fun extractStationId(requestParameters: MultiMap): List<String> {
+    private fun extractStationId(requestParameters: MultiMap): List<String>? {
         val stationId = requestParameters.getAll("station_number")
         if (stationId.isEmpty()) {
 
-            return zuidHollandStations
+            return RegionalStationsSegments.segments["rd"]
         }
         return stationId
     }
@@ -88,7 +68,7 @@ class MeasurementsHandler {
         val endTime = extractEndTime(requestParameters)
         val startTime = extractStartTime(requestParameters)
         response.isChunked = true
-        val firstPage = MeasurementsService().getMeasurement(stationId, formula, startTime, endTime, 1).await()
+        val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
         val pagination = firstPage.pagination
         val message = firstPage.data.groupBy { it.formula }
         val mutex = Mutex()
