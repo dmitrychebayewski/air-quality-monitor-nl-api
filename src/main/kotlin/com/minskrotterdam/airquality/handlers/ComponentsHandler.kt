@@ -2,7 +2,7 @@ package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
-import com.minskrotterdam.airquality.services.AirPollutantsService
+import com.minskrotterdam.airquality.services.ComponentsService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
@@ -28,7 +28,7 @@ class ComponentsHandler {
     private suspend fun getPollutants(ctx: RoutingContext) {
         val response = ctx.response()
         response.isChunked = true
-        val firstPage = AirPollutantsService().getPollutants(1).await()
+        val firstPage = ComponentsService().getPollutants(1).await()
         val pagination = firstPage.pagination
         val mutex = Mutex()
         mutex.withLock {
@@ -39,7 +39,7 @@ class ComponentsHandler {
         getSafeLaunchRanges(pagination.last_page).forEach {
             it.map {
                 CoroutineScope(Dispatchers.Default).async {
-                    val measurement = AirPollutantsService().getPollutants(it).await()
+                    val measurement = ComponentsService().getPollutants(it).await()
                     mutex.withLock {
                         response.write(",")
                         response.write(Json.encode(measurement.data.groupBy { it.formula }))

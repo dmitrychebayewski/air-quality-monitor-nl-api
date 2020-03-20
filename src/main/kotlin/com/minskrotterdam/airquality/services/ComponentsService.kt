@@ -1,24 +1,24 @@
 package com.minskrotterdam.airquality.services
 
 import com.minskrotterdam.airquality.common.LUCHTMEET_URL_ENDPOINT
-import com.minskrotterdam.airquality.models.component_info.ComponentInfo
+import com.minskrotterdam.airquality.models.components.PollutantComponents
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
-import retrofit2.http.Path
+import retrofit2.http.Query
 
-class PollutantInformationService {
+class ComponentsService {
 
-    fun getPollutantInfo(formula: String): Call<ComponentInfo> {
-        return Api.create().getPollutantInfo(formula)
+    fun getPollutants(page: Int): Call<PollutantComponents> {
+        return Api.create().getPollutants(page)
     }
 
     private interface Api {
 
-        @GET("components/{formula}")
-        fun getPollutantInfo(
-                @Path("formula") formula: String): Call<ComponentInfo>
+        @GET("components")
+        fun getPollutants(
+                @Query("page") page: Int): Call<PollutantComponents>
 
         companion object Factory {
             fun create(): Api {

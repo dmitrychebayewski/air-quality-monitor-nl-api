@@ -15,7 +15,8 @@ class TestRoutes(private val vertx: Vertx) {
             route().handler(configHandlers.bodyHandler)
             get("$API_ENDPOINT/stations/:location").coroutineHandler { StationsHandler().stationsHandler(it) }
             get("$API_ENDPOINT/components").coroutineHandler { ComponentsHandler().pollutantComponentsHandler(it) }
-            get("$API_ENDPOINT/components/:formula").coroutineHandler { ComponentInfoHandler().pollutantComponentInfoHandler(it) }
+            get("$API_ENDPOINT/components/:formula").coroutineHandler { ComponentInformationHandler().pollutantComponentInfoHandler(it) }
+            get("$API_ENDPOINT/components/:formula/limit").coroutineHandler { ComponentInformationHandler().pollutantComponentLimitHandler(it) }
             get("$API_ENDPOINT/measurements").coroutineHandler { MeasurementsHandler().airMeasurementsHandler(it) }
             get("$API_ENDPOINT/measurements/:station_number").coroutineHandler { AggregatedMeasurementsHandler().airMeasurementsHandler(it) }
             get("$API_ENDPOINT/measurements/region/:name").coroutineHandler { AggregatedMeasurementsHandler().airMeasurementsHandler(it) }

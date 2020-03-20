@@ -26,14 +26,14 @@ class MeasurementsServiceIT : AbstractHttpServiceIT() {
     }
 
     @Test
-    fun testGetMeasurementsGivingValidResponse() {
-        val list = RegionalStationsSegments.segments["ZP"]
+    fun testIsGivingValidResponse() {
+        RegionalStationsSegments.segments["ZP"]
         val response = httpGet(MEASUREMENTS_SERVICE_URL)
         Assert.assertEquals(response.statusLine.statusCode, 200)
     }
 
     @Test
-    fun testGetMeasurementsGivingValidBody() {
+    fun testIsGivingValidBody() {
         val entity = httpGet("$MEASUREMENTS_SERVICE_URL/?start=$start&end=$end&station_number=NL01487").entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
@@ -43,13 +43,14 @@ class MeasurementsServiceIT : AbstractHttpServiceIT() {
     }
 
     @Test
-    fun testGetAggregatedMeasurementsGivingValidBody() {
-        val entity = httpGet("$AGGR_MEASUREMENTS_SERVICE_URL").entity
+    fun testIsDataCorrectlyAggregated() {
+        val entity = httpGet("$AGGR_MEASUREMENTS_SERVICE_URL?formula=NO").entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val typeOMap: Type = object : TypeToken<List<Data>>() {}.type
         val measurements: List<Data> = Gson().fromJson(content.toString(), typeOMap)
-        Assert.assertNotNull(measurements[0].formula)
+        Assert.assertEquals(measurements.size, 1)
+        Assert.assertNotNull(measurements[0].formula === "NO")
     }
 
     @AfterTest

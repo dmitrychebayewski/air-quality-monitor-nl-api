@@ -51,7 +51,9 @@ Or build a Jar and run in production mode
 * `/v1/api/measurements/region/{region}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours in the {region} (zh, rd)
 * `/v1/api/components` - List of monitored air pollutants
 * `/v1/api/components/{formula}` - Air pollutant details, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
+* `/v1/api/components/{formula}/limit` - Air pollutant measurement upper limit, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
 * `/v1/api/stations` - List of stations daily monitoring the air quality in the Netherlands
+* `/v1/api/stations/{loc}` - List of stations daily monitoring the air quality in the Netherlands having {loc} in location description (amsterdam or ams)
 
 
 ### What's included:

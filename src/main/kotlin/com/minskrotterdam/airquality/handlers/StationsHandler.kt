@@ -15,7 +15,6 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
 import ru.gildor.coroutines.retrofit.await
-import java.util.concurrent.atomic.AtomicBoolean
 
 class StationsHandler {
     private val logger = LoggerFactory.getLogger("VertxServer")
