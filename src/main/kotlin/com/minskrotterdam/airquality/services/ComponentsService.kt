@@ -8,7 +8,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-class AirPollutantsService {
+class ComponentsService {
 
     fun getPollutants(page: Int): Call<PollutantComponents> {
         return Api.create().getPollutants(page)

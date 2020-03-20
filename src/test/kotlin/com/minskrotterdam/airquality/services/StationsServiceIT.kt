@@ -9,8 +9,8 @@ import org.testng.annotations.Test
 import java.io.ByteArrayOutputStream
 
 class StationsServiceIT : AbstractHttpServiceIT() {
-
-    val STATIONS_SERVICE_URL = "${TEST_API_ENDPOINT}/stations"
+    val LOCATION = "amsterdam"
+    val STATIONS_SERVICE_URL = "${TEST_API_ENDPOINT}/stations/${LOCATION}"
 
     @BeforeTest
     fun setUp() {
@@ -18,19 +18,19 @@ class StationsServiceIT : AbstractHttpServiceIT() {
     }
 
     @Test
-    fun testGetStationsGivingValidResponse() {
+    fun testIsGivingValidResponse() {
         val response = httpGet(STATIONS_SERVICE_URL)
         Assert.assertEquals(response.statusLine.statusCode, 200)
         Assert.assertEquals(response.getFirstHeader("content-type").value, "application/json")
     }
 
     @Test
-    fun testGetStationsGivingValidResponseBody() {
+    fun testIsGivingValidData() {
         val entity = httpGet(STATIONS_SERVICE_URL).entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
-        val stations = Gson().fromJson(content.toString(), Array<Array<Data>>::class.java)
-        Assert.assertEquals(stations.size, 4)
+        val stations = Gson().fromJson(content.toString(), Array<Data>::class.java)
+        stations.forEach { station -> Assert.assertTrue(station.location.toLowerCase().contains(LOCATION))}
     }
 
     @AfterTest

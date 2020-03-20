@@ -2,7 +2,7 @@ package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
-import com.minskrotterdam.airquality.services.AirPollutantsService
+import com.minskrotterdam.airquality.services.ComponentsService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
@@ -15,7 +15,7 @@ import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
 import ru.gildor.coroutines.retrofit.await
 
-class PollutantComponentsHandler {
+class ComponentsHandler {
     private val logger = LoggerFactory.getLogger("VertxServer")
 
     suspend fun pollutantComponentsHandler(ctx: RoutingContext) {
@@ -28,20 +28,21 @@ class PollutantComponentsHandler {
     private suspend fun getPollutants(ctx: RoutingContext) {
         val response = ctx.response()
         response.isChunked = true
-        val firstPage = AirPollutantsService().getPollutants(1).await()
+        val firstPage = ComponentsService().getPollutants(1).await()
         val pagination = firstPage.pagination
         val mutex = Mutex()
         mutex.withLock {
             response.write("[")
-            response.write(Json.encode(firstPage.data))
+            val groupBy = firstPage.data.groupBy { it.formula }
+            response.write(Json.encode(groupBy))
         }
         getSafeLaunchRanges(pagination.last_page).forEach {
             it.map {
                 CoroutineScope(Dispatchers.Default).async {
-                    val measurement = AirPollutantsService().getPollutants(it).await()
+                    val measurement = ComponentsService().getPollutants(it).await()
                     mutex.withLock {
                         response.write(",")
-                        response.write(Json.encode(measurement.data))
+                        response.write(Json.encode(measurement.data.groupBy { it.formula }))
                     }
                 }
             }.awaitAll()
