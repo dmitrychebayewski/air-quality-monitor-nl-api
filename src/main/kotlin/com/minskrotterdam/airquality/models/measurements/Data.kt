@@ -4,5 +4,5 @@ data class Data(
         val formula: String,
         val station_number: String,
         val timestamp_measured: String,
-        val value: Double
+        var value: Double
 )
