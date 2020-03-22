@@ -60,13 +60,27 @@ private fun MutableList<IntRange>.checkAndInclude(range: IntRange) {
     if (range.first <= range.last) add(range)
 }
 
-fun List<Data>.aggregateByComponent(reducer: (Double, Double) -> Double): List<Data> {
+fun List<Data>.minMaxByComponent(reducer: (Double, Double) -> Double): List<Data> {
     return groupBy { it.formula }.toSortedMap().values.map { it ->
         it.reduce { ac, data ->
             Data(ac.formula,
                     ac.station_number,
                     ac.timestamp_measured, reducer.invoke(ac.value, data.value))
         }
+    }
+}
+
+fun List<Data>.averageValueByComponent(): List<Data> {
+    val reducer = { a: Double, b: Double -> a + b }
+    return groupBy { it.formula }.toSortedMap().values.map { it ->
+        val size = it.size
+        val reduce = it.reduce { ac, data ->
+            Data(ac.formula,
+                    ac.station_number,
+                    ac.timestamp_measured, reducer.invoke(ac.value, data.value))
+        }
+        reduce.value = "%.1f".format(reduce.value / size).toDouble()
+        reduce
     }
 }
 

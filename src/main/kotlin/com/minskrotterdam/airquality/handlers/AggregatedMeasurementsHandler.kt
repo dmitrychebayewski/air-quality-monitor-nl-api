@@ -1,6 +1,7 @@
 package com.minskrotterdam.airquality.handlers
 
-import com.minskrotterdam.airquality.common.aggregateByComponent
+import com.minskrotterdam.airquality.common.averageValueByComponent
+import com.minskrotterdam.airquality.common.minMaxByComponent
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
 import com.minskrotterdam.airquality.common.safeLaunch
 import com.minskrotterdam.airquality.metadata.RegionalStationsSegments
@@ -23,13 +24,22 @@ class AggregatedMeasurementsHandler {
     enum class Aggregate {
         MAX,
         MIN,
+        AVG
     }
+
+    private fun extractAggregatorParam(requestParameters: MultiMap): Aggregate {
+        when (requestParameters.get("aggr")) {
+            Aggregate.MAX.name.toLowerCase() -> return Aggregate.MAX
+            Aggregate.MIN.name.toLowerCase() -> return Aggregate.MIN
+            else -> return return Aggregate.AVG }
+    }
+
 
     private fun extractAggregator(requestParameters: MultiMap): (Double, Double) -> Double {
         when (requestParameters.get("aggr")) {
             Aggregate.MAX.name.toLowerCase() -> return { a: Double, b: Double -> maxOf(a, b) }
             Aggregate.MIN.name.toLowerCase() -> return { a: Double, b: Double -> minOf(a, b) }
-            else -> return { a: Double, b: Double -> "%.1f".format((a + b) / 2).toDouble() }
+            else -> return { a: Double, b: Double -> maxOf(a, b)}
         }
     }
 
@@ -96,7 +106,12 @@ class AggregatedMeasurementsHandler {
         val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
         val pagination = firstPage.pagination
         val aggregatorFun = extractAggregator(requestParameters)
-        val firstResult = firstPage.data.aggregateByComponent(aggregatorFun).toMutableList()
+        val firstResult = if(extractAggregatorParam(requestParameters) == Aggregate.AVG) {
+            firstPage.data.averageValueByComponent().toMutableList()
+        } else {
+            firstPage.data.minMaxByComponent(aggregatorFun).toMutableList()
+        }
+
         val mutex = Mutex()
         //When too many coroutines are waiting for server response concurrently, the server may respond with 504 code
         //Use segmentation to smaller ranges as workaround
@@ -105,14 +120,18 @@ class AggregatedMeasurementsHandler {
                 CoroutineScope(Dispatchers.Default).async {
                     val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                             endTime, it).await()
-                    val message = measurement.data.aggregateByComponent(aggregatorFun)
+                    val message = if(extractAggregatorParam(requestParameters) == Aggregate.AVG) {
+                        measurement.data.averageValueByComponent()
+                    } else {
+                        measurement.data.minMaxByComponent(aggregatorFun)
+                    }
                     mutex.withLock {
                         firstResult.addAll(message)
                     }
                 }
             }.awaitAll()
         }
-        val result = firstResult.aggregateByComponent(aggregatorFun)
+        val result = firstResult.minMaxByComponent(aggregatorFun)
         mutex.withLock {
             response.write(Json.encode(result))
             response.endAwait()
