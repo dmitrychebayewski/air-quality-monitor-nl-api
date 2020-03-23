@@ -48,7 +48,7 @@ class MeasurementsHandler {
     private fun extractStartTime(requestParameters: MultiMap): String {
         val startTime = requestParameters.get("start")
         if (startTime.isNullOrEmpty()) {
-            return Instant.now().minus(6, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
+            return Instant.now().minus(4, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
         }
         return startTime
     }
@@ -70,11 +70,11 @@ class MeasurementsHandler {
         response.isChunked = true
         val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
         val pagination = firstPage.pagination
-        val message = firstPage.data.groupBy { it.formula }
+        val firstResult = firstPage.data.groupBy { it.formula }
         val mutex = Mutex()
         mutex.withLock {
             response.write("[")
-            response.write(Json.encode(message))
+            response.write(Json.encode(firstResult))
         }
         //When too many coroutines are waiting for server response concurrently, the server may respond with 504 code
         //Use segmentation to smaller ranges as workaround
@@ -83,10 +83,10 @@ class MeasurementsHandler {
                 CoroutineScope(Dispatchers.Default).async {
                     val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                             endTime, it).await()
-                    val message = measurement.data.groupBy { it.formula }
+                    val result = measurement.data.groupBy { it.formula }
                     mutex.withLock {
                         response.write(",")
-                        response.write(Json.encode(message))
+                        response.write(Json.encode(result))
                     }
                 }
             }.awaitAll()

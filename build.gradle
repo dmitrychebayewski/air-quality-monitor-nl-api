@@ -1,25 +1,30 @@
 buildscript {
-    ext.kotlin_version = '1.3.61'
+    ext.kotlin_version = '1.3.71'
     ext.vertx_version = '3.8.5'
-    ext.shadow_version = '4.0.3'
+    ext.shadow_version = '5.2.0'
+    ext.retry_gradle_tests = '1.1.3'
     ext.slf4j_version = '1.7.30' // Logging in the app
     ext.logback_version = '1.2.3' // Logging to a file, implements SLF4J API, so we can use it with slf4j
-    ext.retrofit_version = '2.7.1' // HTTP client
+    ext.retrofit_version = '2.7.2' // HTTP client
     ext.retrofit_coroutines_version = '1.1.0' // makes retrofit's calls work with coroutines
     ext.kotson_version = '2.5.0' // JSON (w/ Gson) parser
-    // https://mvnrepository.com/artifact/org.testng/testng
-    ext.testng_version = '7.1.0'
+    ext.junit_version = '4.13'
     //https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-    ext.apache_http_client_version = '4.5.11'
+    ext.apache_http_client_version = '4.5.12'
     ext.hamcrest_all_version = '1.3'
+    ext.vertx_unit_version = '3.8.5'
 
     repositories {
         jcenter()
+        maven {
+            url = uri("https://plugins.gradle.org/m2/")
+        }
     }
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version",
-                "com.github.jengelman.gradle.plugins:shadow:$shadow_version"
+                "com.github.jengelman.gradle.plugins:shadow:$shadow_version",
+                "org.gradle:test-retry-gradle-plugin:$retry_gradle_tests"
     }
 
 }
@@ -27,6 +32,7 @@ buildscript {
 apply plugin: 'kotlin'
 apply plugin: 'application'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: "org.gradle.test-retry"
 
 repositories {
     jcenter()
@@ -51,7 +57,9 @@ dependencies {
     runtime "ch.qos.logback:logback-classic:$logback_version"
     compile "org.slf4j:slf4j-api:$slf4j_version"
     // https://mvnrepository.com/artifact/org.testng/testng
-    testCompile "org.testng:testng:$testng_version"
+    //testCompile "org.testng:testng:$testng_version"
+    testCompile "io.vertx:vertx-unit:$vertx_unit_version"
+    testCompile "junit:junit:$junit_version"
     testCompile "org.apache.httpcomponents:httpclient:$apache_http_client_version"
     testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: "$hamcrest_all_version"
 }
@@ -76,13 +84,19 @@ compileTestKotlin {
 }
 
 test {
-    useTestNG()
-    scanForTestClasses = false
+    useJUnit()
+    //scanForTestClasses = false
     testLogging.showStandardStreams = true
+    retry {
+        maxRetries = 3
+        maxFailures = 20
+        failOnPassedAfterRetry = true
+    }
     reports {
         junitXml.enabled = false
         html.enabled = true
     }
+
 }
 
 // Naming and packaging settings for the "shadow jar".

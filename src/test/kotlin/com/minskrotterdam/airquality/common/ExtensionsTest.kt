@@ -1,7 +1,8 @@
 package com.minskrotterdam.airquality.common
 
-import org.testng.Assert
-import org.testng.annotations.Test
+import org.junit.Assert
+import org.junit.Test
+
 
 class ExtensionsTest {
 
