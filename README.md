@@ -79,7 +79,7 @@ Current version of air quality monitoring data service provides the following en
 
 * `/v1/api/components` - List of monitored air pollutants
 * `/v1/api/component/info/{formula}` - Air pollutant details, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
-* `/v1/api/components/limit/{formula}` - Air pollutant measurement upper limit, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
+* `/v1/api/component/limit/{formula}` - Air pollutant measurement upper limit, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
 
 * `/v1/api/measurements` - Measurements of air pollutant values, taken from now back to 4 hours
 * `/v1/api/measurement/station/{station}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours by the {station}
