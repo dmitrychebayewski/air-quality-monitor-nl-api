@@ -2,40 +2,46 @@ package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
 import com.minskrotterdam.airquality.models.stations.Data
-import org.testng.Assert
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeTest
-import org.testng.annotations.Test
-import java.io.ByteArrayOutputStream
+import io.vertx.ext.unit.TestContext
+import io.vertx.ext.unit.junit.VertxUnitRunner
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
 
+import java.io.ByteArrayOutputStream
+@RunWith(VertxUnitRunner::class)
 class StationsServiceIT : AbstractHttpServiceIT() {
     val LOCATION = "amsterdam"
-    val STATIONS_SERVICE_URL = "${TEST_API_ENDPOINT}/stations/${LOCATION}"
 
-    @BeforeTest
-    fun setUp() {
-        setupTests()
+    private fun stationsUrl(): String {
+        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/stations/${LOCATION}"
+    }
+
+    @Before
+    fun setUp(ctx: TestContext) {
+        setupVerticle(ctx)
     }
 
     @Test
-    fun testIsGivingValidResponse() {
-        val response = httpGet(STATIONS_SERVICE_URL)
-        Assert.assertEquals(response.statusLine.statusCode, 200)
-        Assert.assertEquals(response.getFirstHeader("content-type").value, "application/json")
+    fun testIsGivingValidResponse(ctx: TestContext) {
+        val response = httpGet(stationsUrl())
+        ctx.assertEquals(response.statusLine.statusCode, 200)
+        ctx.assertEquals(response.getFirstHeader("content-type").value, "application/json")
     }
 
     @Test
-    fun testIsGivingValidData() {
-        val entity = httpGet(STATIONS_SERVICE_URL).entity
+    fun testIsGivingValidData(ctx: TestContext) {
+        val entity = httpGet(stationsUrl()).entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val stations = Gson().fromJson(content.toString(), Array<Data>::class.java)
-        stations.forEach { station -> Assert.assertTrue(station.location.toLowerCase().contains(LOCATION))}
+        stations.forEach { station -> ctx.assertTrue(station.location.toLowerCase().contains(LOCATION))}
     }
 
-    @AfterTest
-    fun tearDown() {
-        tearDownTests()
+    @After
+    fun tearDown(ctx: TestContext) {
+        tearDownTests(ctx)
     }
 
 }

@@ -1,7 +1,7 @@
 package com.minskrotterdam.airquality.environment
 
 private val DEFAULT_HOST = "localhost"
-private val DEFAULT_TEST_PORT = 8081
+private val DEFAULT_TEST_PORT = 8082
 
 val TEST_PORT: Int
     get() {

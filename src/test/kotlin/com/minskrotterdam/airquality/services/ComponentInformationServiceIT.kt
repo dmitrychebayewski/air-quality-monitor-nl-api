@@ -3,49 +3,59 @@ package com.minskrotterdam.airquality.services
 import com.google.gson.Gson
 import com.minskrotterdam.airquality.models.component_info.ComponentInfo
 import com.minskrotterdam.airquality.models.component_info.Limit
-import org.testng.Assert
-import org.testng.annotations.AfterTest
-import org.testng.annotations.BeforeTest
-import org.testng.annotations.Test
+import io.vertx.ext.unit.TestContext
+import io.vertx.ext.unit.junit.VertxUnitRunner
+import org.junit.After
+import org.junit.Before
+import org.junit.Test
+import org.junit.runner.RunWith
+
 import java.io.ByteArrayOutputStream
-
+@RunWith(VertxUnitRunner::class)
 class ComponentInformationServiceIT : AbstractHttpServiceIT() {
-    val FORMULA = "NO2"
-    val POLLUTANT_INFO_SERVICE_URL = "${TEST_API_ENDPOINT}/components/${FORMULA}"
-    val POLLUTANT_LIMIT_SERVICE_URL = "${TEST_API_ENDPOINT}/components/${FORMULA}/limit"
-    @BeforeTest
-    fun setUp() {
-        setupTests()
+    private val FORMULA = "NO2"
+
+    private fun componentInfoUrl(): String {
+        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/components/${FORMULA}"
+    }
+
+    private fun componentLimitUrl(): String {
+        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/components/${FORMULA}/limit"
+    }
+
+    @Before
+    fun setUp(ctx: TestContext) {
+        setupVerticle(ctx)
     }
 
     @Test
-    fun testIsGivingValidResponse() {
-        val response = httpGet(POLLUTANT_INFO_SERVICE_URL)
-        Assert.assertEquals(response.statusLine.statusCode, 200)
-        Assert.assertEquals(response.getFirstHeader("content-type").value, "application/json")
+    fun testIsGivingValidResponse(ctx: TestContext) {
+        val response = httpGet(componentInfoUrl())
+        ctx.assertEquals(response.statusLine.statusCode, 200)
+        ctx.assertEquals(response.getFirstHeader("content-type").value, "application/json")
     }
 
     @Test
-    fun testIsGivingValidBody() {
-        val entity = httpGet(POLLUTANT_INFO_SERVICE_URL).entity
+    fun testIsGivingValidBody(ctx: TestContext) {
+        val entity = httpGet(componentInfoUrl()).entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val componentInfo = Gson().fromJson(content.toString(), ComponentInfo::class.java)
-        Assert.assertEquals(componentInfo.data.formula, FORMULA)
+        ctx.assertEquals(componentInfo.data.formula, FORMULA)
     }
 
     @Test
-    fun testIsGivingValidValues() {
-        val entity = httpGet(POLLUTANT_LIMIT_SERVICE_URL).entity
+    fun testIsGivingValidValues(ctx: TestContext) {
+        val entity = httpGet(componentLimitUrl()).entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val limit = Gson().fromJson(content.toString(), Limit::class.java)
-        Assert.assertEquals(limit.lowerband, 200)
+        ctx.assertEquals(limit.lowerband, 200)
     }
 
-    @AfterTest
-    fun tearDown() {
-        tearDownTests()
+    @After
+    fun tearDown(ctx: TestContext) {
+        tearDownTests(ctx)
     }
 
 }

@@ -6,13 +6,12 @@ import io.vertx.core.AbstractVerticle
 import io.vertx.core.Vertx
 
 class TestVerticle : AbstractVerticle() {
+
     override fun start() {
         val vertx = Vertx.vertx()
         val router = TestRoutes(vertx).createRouter()
         vertx.createHttpServer()
                 .requestHandler(router::handle)
-                .listen(TEST_PORT)
-
+                .listen(config().getInteger("http.port", TEST_PORT))
     }
-
 }
