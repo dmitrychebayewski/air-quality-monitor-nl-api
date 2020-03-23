@@ -75,14 +75,18 @@ Build a fat Jar and run in production mode using command
 
 Current version of air quality monitoring data service provides the following endpoints:
 
-* `/v1/api/measurements` - Sequences of air pollutants measurements taken from now back to 6 hours
-* `/v1/api/measurements/{station}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours by the {station}
-* `/v1/api/measurements/region/{region}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours in the {region} (zh, rd)
-* `/v1/api/components` - List of monitored air pollutants
-* `/v1/api/components/{formula}` - Air pollutant details, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
-* `/v1/api/components/{formula}/limit` - Air pollutant measurement upper limit, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
-* `/v1/api/stations` - List of stations daily monitoring the air quality in the Netherlands
 * `/v1/api/stations/{loc}` - List of stations daily monitoring the air quality in the Netherlands having {loc} in location description (amsterdam or ams)
+
+* `/v1/api/components` - List of monitored air pollutants
+* `/v1/api/component/info/{formula}` - Air pollutant details, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
+* `/v1/api/components/limit/{formula}` - Air pollutant measurement upper limit, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
+
+* `/v1/api/measurements` - Measurements of air pollutant values, taken from now back to 4 hours
+* `/v1/api/measurement/station/{station}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours by the {station}
+* `/v1/api/measurement/region/{region}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours in the {region} 
+(supported zh, rd)
+
+
 
 
 ### Included features
