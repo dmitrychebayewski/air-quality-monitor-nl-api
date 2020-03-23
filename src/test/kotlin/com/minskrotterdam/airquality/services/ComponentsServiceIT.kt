@@ -3,6 +3,7 @@ package com.minskrotterdam.airquality.services
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.minskrotterdam.airquality.models.components.Data
+import com.minskrotterdam.airquality.routes.COMPONENTS_PATH
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import org.junit.After
@@ -16,7 +17,7 @@ import java.lang.reflect.Type
 class ComponentsServiceIT : AbstractHttpServiceIT() {
 
     private fun componentInfoUrl(): String {
-        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/components"
+        return "${TEST_API_URL}:${port}/${COMPONENTS_PATH}"
     }
 
     @Before

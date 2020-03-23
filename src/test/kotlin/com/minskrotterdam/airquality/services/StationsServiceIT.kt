@@ -2,6 +2,7 @@ package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
 import com.minskrotterdam.airquality.models.stations.Data
+import com.minskrotterdam.airquality.routes.STATIONS_PATH
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import org.junit.After
@@ -10,12 +11,13 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import java.io.ByteArrayOutputStream
+
 @RunWith(VertxUnitRunner::class)
 class StationsServiceIT : AbstractHttpServiceIT() {
     val LOCATION = "amsterdam"
 
     private fun stationsUrl(): String {
-        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/stations/${LOCATION}"
+        return "${TEST_API_URL}:${port}/${STATIONS_PATH}/amsterdam"
     }
 
     @Before
@@ -36,7 +38,7 @@ class StationsServiceIT : AbstractHttpServiceIT() {
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val stations = Gson().fromJson(content.toString(), Array<Data>::class.java)
-        stations.forEach { station -> ctx.assertTrue(station.location.toLowerCase().contains(LOCATION))}
+        stations.forEach { station -> ctx.assertTrue(station.location.toLowerCase().contains(LOCATION)) }
     }
 
     @After

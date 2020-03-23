@@ -36,6 +36,7 @@ class ComponentInformationHandler {
             response.endAwait()
         }
     }
+
     private suspend fun getUpperPollutantLimit(ctx: RoutingContext) {
         val response = ctx.response()
         response.isChunked = true

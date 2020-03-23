@@ -3,6 +3,8 @@ package com.minskrotterdam.airquality.services
 import com.google.gson.Gson
 import com.minskrotterdam.airquality.models.component_info.ComponentInfo
 import com.minskrotterdam.airquality.models.component_info.Limit
+import com.minskrotterdam.airquality.routes.COMPONENT_FORMULA_LIMIT_PATH
+import com.minskrotterdam.airquality.routes.COMPONENT_FORMULA_PATH
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import org.junit.After
@@ -11,16 +13,17 @@ import org.junit.Test
 import org.junit.runner.RunWith
 
 import java.io.ByteArrayOutputStream
+
 @RunWith(VertxUnitRunner::class)
 class ComponentInformationServiceIT : AbstractHttpServiceIT() {
     private val FORMULA = "NO2"
 
     private fun componentInfoUrl(): String {
-        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/components/${FORMULA}"
+        return "${TEST_API_URL}:${port}/${COMPONENT_FORMULA_PATH}/${FORMULA}"
     }
 
     private fun componentLimitUrl(): String {
-        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/components/${FORMULA}/limit"
+        return "${TEST_API_URL}:${port}/${COMPONENT_FORMULA_LIMIT_PATH}/${FORMULA}"
     }
 
     @Before

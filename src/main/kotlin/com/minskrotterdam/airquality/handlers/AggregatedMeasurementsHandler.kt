@@ -1,8 +1,8 @@
 package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.common.averageValueByComponent
-import com.minskrotterdam.airquality.common.minMaxByComponent
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
+import com.minskrotterdam.airquality.common.minMaxByComponent
 import com.minskrotterdam.airquality.common.safeLaunch
 import com.minskrotterdam.airquality.metadata.RegionalStationsSegments
 import com.minskrotterdam.airquality.services.MeasurementsService
@@ -28,10 +28,11 @@ class AggregatedMeasurementsHandler {
     }
 
     private fun extractAggregatorParam(requestParameters: MultiMap): Aggregate {
-        when (requestParameters.get("aggr")) {
-            Aggregate.MAX.name.toLowerCase() -> return Aggregate.MAX
-            Aggregate.MIN.name.toLowerCase() -> return Aggregate.MIN
-            else -> return return Aggregate.AVG }
+        return when (requestParameters.get("aggr")) {
+            Aggregate.MAX.name.toLowerCase() -> Aggregate.MAX
+            Aggregate.MIN.name.toLowerCase() -> Aggregate.MIN
+            else -> return Aggregate.AVG
+        }
     }
 
 
@@ -39,19 +40,18 @@ class AggregatedMeasurementsHandler {
         when (requestParameters.get("aggr")) {
             Aggregate.MAX.name.toLowerCase() -> return { a: Double, b: Double -> maxOf(a, b) }
             Aggregate.MIN.name.toLowerCase() -> return { a: Double, b: Double -> minOf(a, b) }
-            else -> return { a: Double, b: Double -> maxOf(a, b)}
+            else -> return { a: Double, b: Double -> maxOf(a, b) }
         }
     }
 
     private fun extractStationNumbers(ctx: RoutingContext): List<String>? {
         val regio = ctx.pathParam("region")
-        if(regio.isNullOrEmpty()) {
+        if (regio.isNullOrEmpty()) {
             val stationId = ctx.pathParam("station_number")
             return if (stationId.isNotEmpty())
                 listOf(stationId)
-            else RegionalStationsSegments.segments["ZP"];
-        }
-        else {
+            else RegionalStationsSegments.segments["ZP"]
+        } else {
             return RegionalStationsSegments.segments.getOrDefault(regio.toLowerCase(), RegionalStationsSegments.segments["zp"])
         }
     }
@@ -106,7 +106,7 @@ class AggregatedMeasurementsHandler {
         val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
         val pagination = firstPage.pagination
         val aggregatorFun = extractAggregator(requestParameters)
-        val firstResult = if(extractAggregatorParam(requestParameters) == Aggregate.AVG) {
+        val firstResult = if (extractAggregatorParam(requestParameters) == Aggregate.AVG) {
             firstPage.data.averageValueByComponent().toMutableList()
         } else {
             firstPage.data.minMaxByComponent(aggregatorFun).toMutableList()
@@ -120,7 +120,7 @@ class AggregatedMeasurementsHandler {
                 CoroutineScope(Dispatchers.Default).async {
                     val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                             endTime, it).await()
-                    val message = if(extractAggregatorParam(requestParameters) == Aggregate.AVG) {
+                    val message = if (extractAggregatorParam(requestParameters) == Aggregate.AVG) {
                         measurement.data.averageValueByComponent()
                     } else {
                         measurement.data.minMaxByComponent(aggregatorFun)

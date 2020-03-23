@@ -3,6 +3,9 @@ package com.minskrotterdam.airquality.services
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.minskrotterdam.airquality.models.measurements.Data
+import com.minskrotterdam.airquality.routes.MEASUREMENTS_PATH
+import com.minskrotterdam.airquality.routes.MEASUREMENT_REGION_PATH
+import com.minskrotterdam.airquality.routes.MEASUREMENT_STATION_PATH
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import org.junit.After
@@ -21,13 +24,16 @@ class MeasurementsServiceIT : AbstractHttpServiceIT() {
     private val end = Instant.now().truncatedTo(ChronoUnit.SECONDS).toString()
 
     private fun measurementsUrl(): String {
-        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/measurements?station_number=NL01487"
+        return "${TEST_API_URL}:${port}/${MEASUREMENTS_PATH}?station_number=NL01487"
     }
 
-    private fun aggrMeasurementsUrl(): String {
-        return "${TEST_API_URL}:${port}/${TEST_API_ENDPOINT}/measurements/NL01487"
+    private fun aggrMeasurementsStationUrl(): String {
+        return "${TEST_API_URL}:${port}/${MEASUREMENT_STATION_PATH}/NL01487"
     }
 
+    private fun aggrMeasurementsRegionUrl(): String {
+        return "${TEST_API_URL}:${port}/${MEASUREMENT_REGION_PATH}/ZH"
+    }
 
     @Before
     fun setUp(ctx: TestContext) {
@@ -51,8 +57,19 @@ class MeasurementsServiceIT : AbstractHttpServiceIT() {
     }
 
     @Test
-    fun testIsDataCorrectlyAggregated(ctx: TestContext) {
-        val entity = httpGet("${aggrMeasurementsUrl()}?formula=NO").entity
+    fun testAreStationMeasurementsCorrectlyAggregated(ctx: TestContext) {
+        val entity = httpGet("${aggrMeasurementsStationUrl()}?formula=NO").entity
+        val content = ByteArrayOutputStream()
+        entity.writeTo(content)
+        val typeOMap: Type = object : TypeToken<List<Data>>() {}.type
+        val measurements: List<Data> = Gson().fromJson(content.toString(), typeOMap)
+        ctx.assertEquals(measurements.size, 1)
+        ctx.assertNotNull(measurements[0].formula === "NO")
+    }
+
+    @Test
+    fun testAreRegionalMeasurementsCorrectlyAggregated(ctx: TestContext) {
+        val entity = httpGet("${aggrMeasurementsRegionUrl()}?formula=NO").entity
         val content = ByteArrayOutputStream()
         entity.writeTo(content)
         val typeOMap: Type = object : TypeToken<List<Data>>() {}.type
