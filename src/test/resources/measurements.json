@@ -1,0 +1,121 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "http://example.com/example.json",
+  "type": "array",
+  "readOnly": false,
+  "writeOnly": false,
+  "uniqueItems": false,
+  "minItems": 0,
+  "minContains": 1,
+  "title": "The Root Schema",
+  "description": "The root schema comprises the entire JSON document.",
+  "additionalItems": true,
+  "items": {
+    "$id": "#/items",
+    "type": "object",
+    "readOnly": false,
+    "writeOnly": false,
+    "minProperties": 0,
+    "title": "The Items Schema",
+    "description": "An explanation about the purpose of this instance.",
+    "default": {},
+    "examples": [
+      {
+        "formula": "FN",
+        "station_number": "NL01488",
+        "timestamp_measured": "2020-03-22T23:00:00+00:00",
+        "value": 0.4
+      },
+      {
+        "timestamp_measured": "2020-03-22T23:00:00+00:00",
+        "value": 0.2,
+        "formula": "NO",
+        "station_number": "NL01488"
+      },
+      {
+        "timestamp_measured": "2020-03-22T23:00:00+00:00",
+        "value": 10.1,
+        "formula": "NO2",
+        "station_number": "NL01488"
+      },
+      {
+        "timestamp_measured": "2020-03-22T23:00:00+00:00",
+        "value": 61.1,
+        "formula": "O3",
+        "station_number": "NL01488"
+      },
+      {
+        "timestamp_measured": "2020-03-22T23:00:00+00:00",
+        "value": 7.1,
+        "formula": "PM10",
+        "station_number": "NL01488"
+      },
+      {
+        "timestamp_measured": "2020-03-22T23:00:00+00:00",
+        "value": 5.6,
+        "formula": "PM25",
+        "station_number": "NL01488"
+      }
+    ],
+    "additionalProperties": true,
+    "required": [
+      "formula",
+      "station_number",
+      "timestamp_measured",
+      "value"
+    ],
+    "properties": {
+      "formula": {
+        "$id": "#/items/properties/formula",
+        "type": "string",
+        "readOnly": false,
+        "writeOnly": false,
+        "minLength": 0,
+        "title": "The Formula Schema",
+        "description": "An explanation about the purpose of this instance.",
+        "default": "",
+        "examples": [
+          "FN"
+        ]
+      },
+      "station_number": {
+        "$id": "#/items/properties/station_number",
+        "type": "string",
+        "readOnly": false,
+        "writeOnly": false,
+        "minLength": 0,
+        "title": "The Station_number Schema",
+        "description": "An explanation about the purpose of this instance.",
+        "default": "",
+        "examples": [
+          "NL01488"
+        ]
+      },
+      "timestamp_measured": {
+        "$id": "#/items/properties/timestamp_measured",
+        "type": "string",
+        "readOnly": false,
+        "writeOnly": false,
+        "minLength": 0,
+        "title": "The Timestamp_measured Schema",
+        "description": "An explanation about the purpose of this instance.",
+        "default": "",
+        "examples": [
+          "2020-03-22T23:00:00+00:00"
+        ]
+      },
+      "value": {
+        "$id": "#/items/properties/value",
+        "type": "number",
+        "readOnly": false,
+        "writeOnly": false,
+        "title": "The Value Schema",
+        "description": "An explanation about the purpose of this instance.",
+        "default": 0,
+        "examples": [
+          0.4
+        ]
+      }
+    }
+  }
+}

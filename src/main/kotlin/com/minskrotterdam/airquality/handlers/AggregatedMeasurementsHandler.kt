@@ -28,10 +28,11 @@ class AggregatedMeasurementsHandler {
     }
 
     private fun extractAggregatorParam(requestParameters: MultiMap): Aggregate {
-        when (requestParameters.get("aggr")) {
-            Aggregate.MAX.name.toLowerCase() -> return Aggregate.MAX
-            Aggregate.MIN.name.toLowerCase() -> return Aggregate.MIN
-            else -> return return Aggregate.AVG }
+        return when (requestParameters.get("aggr")) {
+            Aggregate.MAX.name.toLowerCase() -> Aggregate.MAX
+            Aggregate.MIN.name.toLowerCase() -> Aggregate.MIN
+            else -> return Aggregate.AVG
+        }
     }
 
 
@@ -49,7 +50,7 @@ class AggregatedMeasurementsHandler {
             val stationId = ctx.pathParam("station_number")
             return if (stationId.isNotEmpty())
                 listOf(stationId)
-            else RegionalStationsSegments.segments["ZP"];
+            else RegionalStationsSegments.segments["ZP"]
         }
         else {
             return RegionalStationsSegments.segments.getOrDefault(regio.toLowerCase(), RegionalStationsSegments.segments["zp"])
@@ -75,7 +76,7 @@ class AggregatedMeasurementsHandler {
     private fun extractStartTime(requestParameters: MultiMap): String {
         val startTime = requestParameters.get("start")
         if (startTime.isNullOrEmpty()) {
-            return Instant.now().minus(6, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
+            return Instant.now().minus(4, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
         }
         return startTime
     }
