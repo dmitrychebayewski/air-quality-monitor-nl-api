@@ -27,35 +27,41 @@ class StationsHandler {
     }
 
     private suspend fun getStations(ctx: RoutingContext) {
-        val response = ctx.response()
-        val location = ctx.pathParam("location").toLowerCase()
-        response.isChunked = true
-        val firstPage = StationsService().getStations(1).await()
-        val pagination = firstPage.pagination
-        val mutex = Mutex()
         val result: MutableList<Data> = mutableListOf()
-        mutex.withLock {
-            val stations = firstPage.data.filter { it.location.toLowerCase().contains(location) }
-            if (stations.isNotEmpty()) {
-                result.addAll(stations)
+        try{
+            val response = ctx.response()
+            val location = ctx.pathParam("location").toLowerCase()
+            response.isChunked = true
+            val firstPage = StationsService().getStations(1).await()
+            val pagination = firstPage.pagination
+            val mutex = Mutex()
+            mutex.withLock {
+                val stations = firstPage.data.filter { it.location.toLowerCase().contains(location) }
+                if (stations.isNotEmpty()) {
+                    result.addAll(stations)
+                }
             }
-        }
-        getSafeLaunchRanges(pagination.last_page).forEach { intRange ->
-            intRange.map {
-                CoroutineScope(Dispatchers.Default).async {
-                    val stations = StationsService().getStations(it).await()
-                    val locatedStations = stations.data.filter { it.location.toLowerCase().contains(location) }
-                    mutex.withLock {
-                        if (locatedStations.isNotEmpty()) {
-                            result.addAll(locatedStations)
+            getSafeLaunchRanges(pagination.last_page).forEach { intRange ->
+                intRange.map {
+                    CoroutineScope(Dispatchers.Default).async {
+                        val stations = StationsService().getStations(it).await()
+                        val locatedStations = stations.data.filter { it.location.toLowerCase().contains(location) }
+                        mutex.withLock {
+                            if (locatedStations.isNotEmpty()) {
+                                result.addAll(locatedStations)
+                            }
                         }
                     }
-                }
-            }.awaitAll()
+                }.awaitAll()
+            }
+            mutex.withLock {
+                response.write(Json.encode(result))
+                response.endAwait()
+            }
+
         }
-        mutex.withLock {
-            response.write(Json.encode(result))
-            response.endAwait()
+        finally {
+            result.clear()
         }
     }
 
