@@ -1,11 +1,11 @@
 # Air quality monitoring API written in Kotlin  🛠
 
-
 ## Purpose
 
 The project is a polygon for learning the art of building and testing an API.
 
-I used the well-known ope service [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/).
+Using the well-known ope service [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/),
+I have launched the consumer service, [airrotterdam-api](https://app.swaggerhub.com/apis/dmitrychebayewski/airrotterdam/0.9)
 
 ## Info from Luchtmeetnet
 
