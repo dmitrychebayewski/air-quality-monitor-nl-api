@@ -5,7 +5,7 @@
 The project is a polygon for learning the art of building and testing an API.
 
 Using the well-known ope service [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/),
-I have launched the consumer service, [airrotterdam-api](https://app.swaggerhub.com/apis/dmitrychebayewski/airrotterdam/0.9)
+I have launched the service that consumes and aggregates the data, produced by LuchtmeeNet open API.
 
 ## Info from Luchtmeetnet
 
@@ -55,6 +55,7 @@ Each data service is shipped with integration tests.
 Current framework of integration tests is built with [Apache Http Client](https://hc.apache.org/httpcomponents-client-4.5.x/index.html), 
 [Vert.X Unit](https://vertx.io/docs/vertx-unit/java/) and Junit. 
 Integration tests of air quality monitor API are also armed with [Test Retry Gradle Plugin](https://github.com/gradle/test-retry-gradle-plugin).
+They are integrated with CircleCI platform. 
 
 The synchronous HTTP client is to be replaced either with [REST Assured](http://rest-assured.io/) 
 or with [Vert.X Async Http client](https://how-to.vertx.io/http-client-howto/)
@@ -73,19 +74,8 @@ Build a fat Jar and run in production mode using command
 
 ## API ENDPOINTS
 
-Current version of air quality monitoring data service provides the following endpoints:
-
-* `/v1/api/stations/{loc}` - List of stations daily monitoring the air quality in the Netherlands having {loc} in location description (amsterdam or ams)
-
-* `/v1/api/components` - List of monitored air pollutants
-* `/v1/api/component/info/{formula}` - Air pollutant details, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
-* `/v1/api/component/limit/{formula}` - Air pollutant measurement upper limit, where {formula} is one of: (O3, FN, NO, NO2, PM10, PM25)
-
-* `/v1/api/measurements` - Measurements of air pollutant values, taken from now back to 4 hours
-* `/v1/api/measurement/station/{station}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours by the {station}
-* `/v1/api/measurement/region/{region}` - Aggregated value (currently max, min, avg, default: avg) of each air pollutant measured from now back to to 6 hours in the {region} 
-(supported zh, rd)
-
+OpenAPI is available:
+[airrotterdam-api](https://app.swaggerhub.com/apis/dmitrychebayewski/airrotterdam/0.9)
 
 
 
