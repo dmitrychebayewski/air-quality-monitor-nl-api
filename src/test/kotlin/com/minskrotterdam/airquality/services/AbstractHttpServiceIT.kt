@@ -1,15 +1,19 @@
 package com.minskrotterdam.airquality.services
 
+import com.google.gson.Gson
 import com.minskrotterdam.airquality.environment.TEST_PORT
 import com.minskrotterdam.airquality.verticles.TestVerticle
 import io.vertx.core.DeploymentOptions
 import io.vertx.core.Vertx
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.unit.TestContext
+import org.apache.http.HttpEntity
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpGet
 import org.apache.http.impl.client.CloseableHttpClient
 import org.apache.http.impl.client.HttpClients
+import java.io.ByteArrayOutputStream
+import java.lang.reflect.Type
 import java.net.ServerSocket
 
 
@@ -37,5 +41,11 @@ abstract class AbstractHttpServiceIT {
 
     protected fun tearDownTests(ctx: TestContext) {
         vertX.close(ctx.asyncAssertSuccess())
+    }
+
+    protected fun toObject(entity: HttpEntity, type: Type): Any {
+        val content = ByteArrayOutputStream()
+        entity.writeTo(content)
+        return Gson().fromJson(content.toString(), type)
     }
 }

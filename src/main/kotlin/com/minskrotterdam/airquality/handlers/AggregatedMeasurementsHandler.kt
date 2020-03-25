@@ -1,10 +1,10 @@
 package com.minskrotterdam.airquality.handlers
 
-import com.minskrotterdam.airquality.common.averageValueByComponent
 import com.minskrotterdam.airquality.common.getSafeLaunchRanges
-import com.minskrotterdam.airquality.common.minMaxByComponent
 import com.minskrotterdam.airquality.common.safeLaunch
 import com.minskrotterdam.airquality.metadata.RegionalStationsSegments
+import com.minskrotterdam.airquality.models.AggregateBy
+import com.minskrotterdam.airquality.models.ext.aggregateBy
 import com.minskrotterdam.airquality.models.measurements.Data
 import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
@@ -22,26 +22,12 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 class AggregatedMeasurementsHandler {
-    enum class Aggregate {
-        MAX,
-        MIN,
-        AVG
-    }
 
-    private fun extractAggregatorParam(requestParameters: MultiMap): Aggregate {
+    private fun extractAggregatorParam(requestParameters: MultiMap): AggregateBy {
         return when (requestParameters.get("aggr")) {
-            Aggregate.MAX.name.toLowerCase() -> Aggregate.MAX
-            Aggregate.MIN.name.toLowerCase() -> Aggregate.MIN
-            else -> return Aggregate.AVG
-        }
-    }
-
-
-    private fun extractAggregator(requestParameters: MultiMap): (Double, Double) -> Double {
-        when (requestParameters.get("aggr")) {
-            Aggregate.MAX.name.toLowerCase() -> return { a: Double, b: Double -> maxOf(a, b) }
-            Aggregate.MIN.name.toLowerCase() -> return { a: Double, b: Double -> minOf(a, b) }
-            else -> return { a: Double, b: Double -> maxOf(a, b) }
+            AggregateBy.MAX.name.toLowerCase() -> AggregateBy.MAX
+            AggregateBy.MIN.name.toLowerCase() -> AggregateBy.MIN
+            else -> return AggregateBy.AVG
         }
     }
 
@@ -108,12 +94,8 @@ class AggregatedMeasurementsHandler {
             response.isChunked = true
             val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
             val pagination = firstPage.pagination
-            val aggregatorFun = extractAggregator(requestParameters)
-            firstResult = if (extractAggregatorParam(requestParameters) == Aggregate.AVG) {
-                firstPage.data.averageValueByComponent().toMutableList()
-            } else {
-                firstPage.data.minMaxByComponent(aggregatorFun).toMutableList()
-            }
+            val by = extractAggregatorParam(requestParameters)
+            firstResult = firstPage.data.aggregateBy(extractAggregatorParam(requestParameters))
             val mutex = Mutex()
             //When too many coroutines are waiting for server response concurrently, the server may respond with 504 code
             //Use segmentation to smaller ranges as workaround
@@ -122,26 +104,19 @@ class AggregatedMeasurementsHandler {
                     CoroutineScope(Dispatchers.Default).async {
                         val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                                 endTime, it).await()
-                        val message = if (extractAggregatorParam(requestParameters) == Aggregate.AVG) {
-                            measurement.data.averageValueByComponent()
-                        } else {
-                            measurement.data.minMaxByComponent(aggregatorFun)
-                        }
                         mutex.withLock {
-                            firstResult.addAll(message)
+                            firstResult.addAll(measurement.data.aggregateBy(by))
                         }
                     }
                 }.awaitAll()
             }
-            val result = firstResult.minMaxByComponent(aggregatorFun)
             mutex.withLock {
-                response.write(Json.encode(result))
+                response.write(Json.encode(firstResult.aggregateBy(by)))
                 response.endAwait()
             }
 
         } finally {
             firstResult.clear()
         }
-
     }
 }

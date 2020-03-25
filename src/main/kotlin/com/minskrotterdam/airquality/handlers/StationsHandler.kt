@@ -28,7 +28,7 @@ class StationsHandler {
 
     private suspend fun getStations(ctx: RoutingContext) {
         val result: MutableList<Data> = mutableListOf()
-        try{
+        try {
             val response = ctx.response()
             val location = ctx.pathParam("location").toLowerCase()
             response.isChunked = true
@@ -59,8 +59,7 @@ class StationsHandler {
                 response.endAwait()
             }
 
-        }
-        finally {
+        } finally {
             result.clear()
         }
     }
