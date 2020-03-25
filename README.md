@@ -1,5 +1,7 @@
 # Air quality monitoring API written in Kotlin  🛠
 
+Version 0.9
+
 ## Purpose
 
 The project is a polygon for learning the art of building and testing an API.
