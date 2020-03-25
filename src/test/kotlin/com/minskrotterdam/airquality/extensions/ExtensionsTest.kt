@@ -1,4 +1,4 @@
-package com.minskrotterdam.airquality.common
+package com.minskrotterdam.airquality.extensions
 
 import org.junit.Assert
 import org.junit.Test

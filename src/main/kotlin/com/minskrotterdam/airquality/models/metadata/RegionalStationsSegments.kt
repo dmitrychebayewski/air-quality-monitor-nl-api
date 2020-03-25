@@ -1,4 +1,4 @@
-package com.minskrotterdam.airquality.metadata
+package com.minskrotterdam.airquality.models.metadata
 
 class RegionalStationsSegments {
     companion object {

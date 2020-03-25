@@ -1,7 +1,8 @@
 package com.minskrotterdam.airquality.handlers
 
-import com.minskrotterdam.airquality.common.getSafeLaunchRanges
-import com.minskrotterdam.airquality.common.safeLaunch
+import com.minskrotterdam.airquality.config.HOURS_BACK
+import com.minskrotterdam.airquality.extensions.getSafeLaunchRanges
+import com.minskrotterdam.airquality.extensions.safeLaunch
 import com.minskrotterdam.airquality.models.measurements.Data
 import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
@@ -47,7 +48,7 @@ class MeasurementsHandler {
     private fun extractStartTime(requestParameters: MultiMap): String {
         val startTime = requestParameters.get("start")
         if (startTime.isNullOrEmpty()) {
-            return Instant.now().minus(4, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
+            return Instant.now().minus(HOURS_BACK, ChronoUnit.HOURS).truncatedTo(ChronoUnit.HOURS).toString()
         }
         return startTime
     }

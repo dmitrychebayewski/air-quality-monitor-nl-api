@@ -1,7 +1,7 @@
 package com.minskrotterdam.airquality.routes
 
-import com.minskrotterdam.airquality.common.API_ENDPOINT
-import com.minskrotterdam.airquality.common.coroutineHandler
+import com.minskrotterdam.airquality.config.API_ENDPOINT
+import com.minskrotterdam.airquality.extensions.coroutineHandler
 import com.minskrotterdam.airquality.handlers.*
 import io.vertx.core.Vertx
 import io.vertx.ext.web.Router

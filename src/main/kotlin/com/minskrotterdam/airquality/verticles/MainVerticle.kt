@@ -1,6 +1,6 @@
 package com.minskrotterdam.airquality.verticles
 
-import com.minskrotterdam.airquality.common.PORT
+import com.minskrotterdam.airquality.config.PORT
 import com.minskrotterdam.airquality.routes.Routes
 import io.vertx.core.Vertx
 import io.vertx.core.http.HttpServer
