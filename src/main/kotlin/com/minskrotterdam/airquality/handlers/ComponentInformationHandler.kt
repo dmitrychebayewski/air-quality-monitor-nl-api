@@ -1,6 +1,6 @@
 package com.minskrotterdam.airquality.handlers
 
-import com.minskrotterdam.airquality.common.safeLaunch
+import com.minskrotterdam.airquality.extensions.safeLaunch
 import com.minskrotterdam.airquality.services.ComponentInformationService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext

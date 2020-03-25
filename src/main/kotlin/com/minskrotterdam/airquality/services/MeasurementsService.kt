@@ -1,6 +1,6 @@
 package com.minskrotterdam.airquality.services
 
-import com.minskrotterdam.airquality.common.LUCHTMEET_URL_ENDPOINT
+import com.minskrotterdam.airquality.config.LUCHTMEET_URL_ENDPOINT
 import com.minskrotterdam.airquality.models.measurements.PagedMeasurements
 import okhttp3.OkHttpClient
 import retrofit2.Call

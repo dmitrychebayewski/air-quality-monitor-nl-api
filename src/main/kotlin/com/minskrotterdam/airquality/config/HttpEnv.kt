@@ -1,4 +1,4 @@
-package com.minskrotterdam.airquality.common
+package com.minskrotterdam.airquality.config
 
 private val DEFAULT_HOST = "localhost"
 private val DEFAULT_PORT = 8080

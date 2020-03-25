@@ -1,7 +1,7 @@
 package com.minskrotterdam.airquality.handlers
 
-import com.minskrotterdam.airquality.common.getSafeLaunchRanges
-import com.minskrotterdam.airquality.common.safeLaunch
+import com.minskrotterdam.airquality.extensions.getSafeLaunchRanges
+import com.minskrotterdam.airquality.extensions.safeLaunch
 import com.minskrotterdam.airquality.models.stations.Data
 import com.minskrotterdam.airquality.services.StationsService
 import io.vertx.core.json.Json
