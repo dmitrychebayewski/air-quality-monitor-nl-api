@@ -7,6 +7,7 @@ import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
 
 val STATIONS_PATH = "$API_ENDPOINT/stations"
+val STATION_PATH = "$API_ENDPOINT/station"
 
 val COMPONENTS_PATH = "$API_ENDPOINT/components"
 val COMPONENT_FORMULA_PATH = "$API_ENDPOINT/component/info"
@@ -25,6 +26,7 @@ class Routes(private val vertx: Vertx) {
             route().handler(configHandlers.corsHandler)
             route().handler(configHandlers.bodyHandler)
             get("$STATIONS_PATH/:location").coroutineHandler { StationsHandler().stationsHandler(it) }
+            get("$STATION_PATH/:station_number").coroutineHandler { StationInformationHandler().stationInformationHandler(it) }
             get(COMPONENTS_PATH).coroutineHandler { ComponentsHandler().pollutantComponentsHandler(it) }
             get("$COMPONENT_FORMULA_PATH/:formula").coroutineHandler { ComponentInformationHandler().pollutantComponentInfoHandler(it) }
             get("$COMPONENT_FORMULA_LIMIT_PATH/:formula").coroutineHandler { ComponentInformationHandler().pollutantComponentLimitHandler(it) }
