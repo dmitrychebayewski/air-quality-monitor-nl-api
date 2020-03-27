@@ -16,6 +16,7 @@ val COMPONENT_FORMULA_LIMIT_PATH = "$API_ENDPOINT/component/limit"
 val MEASUREMENTS_PATH = "$API_ENDPOINT/measurements"
 val MEASUREMENT_STATION_PATH = "$API_ENDPOINT/measurement/station"
 val MEASUREMENT_REGION_PATH = "$API_ENDPOINT/measurement/region"
+val MEASUREMENT_COMPONENTS_PATH = "$API_ENDPOINT/measurement/components"
 
 
 class Routes(private val vertx: Vertx) {
@@ -33,6 +34,7 @@ class Routes(private val vertx: Vertx) {
             get(MEASUREMENTS_PATH).coroutineHandler { MeasurementsHandler().airMeasurementsHandler(it) }
             get("$MEASUREMENT_STATION_PATH/:station_number").coroutineHandler { AggregatedMeasurementsHandler().airMeasurementsHandler(it) }
             get("$MEASUREMENT_REGION_PATH/:region").coroutineHandler { AggregatedMeasurementsHandler().aggregatedAirMeasurementsHandler(it) }
+            get(MEASUREMENT_COMPONENTS_PATH).coroutineHandler { AggregatedComponentsMeasurementHandler().aggregatedComponentsMeasurementHandler(it) }
             route("/public/*").handler(configHandlers.staticHandler)
             route().handler { configHandlers.otherPageHandler(it) }
         }

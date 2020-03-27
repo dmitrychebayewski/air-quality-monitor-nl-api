@@ -3,10 +3,10 @@ package com.minskrotterdam.airquality.handlers
 import com.minskrotterdam.airquality.config.HOURS_BACK
 import com.minskrotterdam.airquality.extensions.getSafeLaunchRanges
 import com.minskrotterdam.airquality.extensions.safeLaunch
-import com.minskrotterdam.airquality.models.metadata.RegionalStationsSegments
 import com.minskrotterdam.airquality.models.AggregateBy
 import com.minskrotterdam.airquality.models.ext.aggregateBy
 import com.minskrotterdam.airquality.models.measurements.Data
+import com.minskrotterdam.airquality.models.metadata.STATIONS_SEGMENTED
 import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
@@ -38,9 +38,9 @@ class AggregatedMeasurementsHandler {
             val stationId = ctx.pathParam("station_number")
             return if (stationId.isNotEmpty())
                 listOf(stationId)
-            else RegionalStationsSegments.segments["ZP"]
+            else STATIONS_SEGMENTED["zp"]
         } else {
-            return RegionalStationsSegments.segments.getOrDefault(regio.toLowerCase(), RegionalStationsSegments.segments["zp"])
+            return STATIONS_SEGMENTED.getOrDefault(regio.toLowerCase(), STATIONS_SEGMENTED["zp"])
         }
     }
 

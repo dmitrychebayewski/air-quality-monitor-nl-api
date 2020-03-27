@@ -1,8 +1,5 @@
 package com.minskrotterdam.airquality.models.metadata
-
-class RegionalStationsSegments {
-    companion object {
-        val segments = mapOf(
+val STATIONS_SEGMENTED = mapOf(
                 "zh" to listOf("NL10404",
                         "NL10445",
                         "NL10446",
@@ -37,5 +34,3 @@ class RegionalStationsSegments {
                         "NL01489",
                         "NL01912"),
                 "zp" to listOf("NL01487"))
-    }
-}
