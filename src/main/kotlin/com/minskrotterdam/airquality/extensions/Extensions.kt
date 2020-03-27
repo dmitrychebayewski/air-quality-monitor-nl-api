@@ -1,7 +1,6 @@
 package com.minskrotterdam.airquality.extensions
 
 import com.minskrotterdam.airquality.models.CommonServiceError
-import com.minskrotterdam.airquality.models.measurements.Data
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.Json
 import io.vertx.ext.web.Route
