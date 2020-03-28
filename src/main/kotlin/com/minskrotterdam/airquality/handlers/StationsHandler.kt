@@ -41,7 +41,7 @@ class StationsHandler {
             getSafeLaunchRanges(pagination.last_page).forEach { intRange ->
                 intRange.map {
                     val job = Job()
-                    CoroutineScope(Dispatchers.Default + job).async {
+                    CoroutineScope(Dispatchers.IO + job).async {
                         val stations = StationsService().getStations(it).await()
                         val locatedStations = stations.data.filter { it.location.toLowerCase().contains(location) }
                         mutex.withLock {
