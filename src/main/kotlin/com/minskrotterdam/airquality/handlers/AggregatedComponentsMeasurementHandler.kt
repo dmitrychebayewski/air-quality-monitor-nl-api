@@ -87,14 +87,17 @@ class AggregatedComponentsMeasurementHandler {
                 CoroutineScope(Dispatchers.Default).async {
                     val aggregateBy = resultMap[it]?.aggregateBy(by)
                     if (aggregateBy != null) {
-                        val data = aggregateBy[0]
-                        val geometry = (StationInfoService().getStationDetails(data.station_number)).await().data.geometry
+                        val aggregatedData = aggregateBy[0]
+                        val stationDetails = (StationInfoService().getStationDetails(aggregatedData.station_number)).await().data
+                        val geometry = stationDetails.geometry
+                        val whereMeasured = stationDetails.location
                         mutex.withLock {
-                            firstResult.add(ExtData(data.formula,
-                                    data.station_number,
-                                    data.timestamp_measured,
-                                    data.value,
+                            firstResult.add(ExtData(aggregatedData.formula,
+                                    aggregatedData.station_number,
+                                    aggregatedData.timestamp_measured,
+                                    aggregatedData.value,
                                     by.name,
+                                    whereMeasured,
                                     geometry.coordinates))
                         }
                     }
