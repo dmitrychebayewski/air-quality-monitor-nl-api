@@ -6,5 +6,6 @@ data class ExtData(
         val timestamp_measured: String,
         var value: Double,
         val aggr: String,
+        val whereMeasured: String,
         val coordinates: List<Double>
 )
