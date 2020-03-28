@@ -6,7 +6,9 @@ import io.vertx.core.json.Json
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.coroutines.dispatcher
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 fun HttpServerResponse.endWithJson(obj: Any?, statusCode: Int = 200) {
@@ -15,8 +17,10 @@ fun HttpServerResponse.endWithJson(obj: Any?, statusCode: Int = 200) {
 }
 
 fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) {
+    val routerJob = Job()
+    val coroutineScope = CoroutineScope(Dispatchers.Default + routerJob)
     handler { ctx ->
-        GlobalScope.launch(ctx.vertx().dispatcher()) {
+        coroutineScope.launch(ctx.vertx().dispatcher()) {
             try {
                 fn(ctx)
             } catch (e: Exception) {
@@ -27,7 +31,9 @@ fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) {
 }
 
 fun <T> safeLaunch(ctx: RoutingContext, body: suspend () -> T) {
-    GlobalScope.launch(ctx.vertx().dispatcher()) {
+    val handlerJob = Job()
+    val coroutineScope = CoroutineScope(Dispatchers.Default + handlerJob)
+    coroutineScope.launch(ctx.vertx().dispatcher()) {
         try {
             body()
         } catch (e: Exception) {
