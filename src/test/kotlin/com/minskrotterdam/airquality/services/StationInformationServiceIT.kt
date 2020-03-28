@@ -1,7 +1,6 @@
 package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
-import com.minskrotterdam.airquality.models.station_info.Data
 import com.minskrotterdam.airquality.models.station_info.StationInfo
 import com.minskrotterdam.airquality.routes.STATION_PATH
 import io.vertx.ext.unit.TestContext
@@ -10,7 +9,6 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-
 import java.io.ByteArrayOutputStream
 
 @RunWith(VertxUnitRunner::class)

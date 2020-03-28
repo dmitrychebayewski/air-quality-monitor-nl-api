@@ -9,10 +9,7 @@ import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.gildor.coroutines.retrofit.await
@@ -78,7 +75,8 @@ class MeasurementsHandler {
             //Use segmentation to smaller ranges as workaround
             getSafeLaunchRanges(pagination.last_page).forEach { it ->
                 it.map {
-                    CoroutineScope(Dispatchers.Default).async {
+                    val job = Job()
+                    CoroutineScope(Dispatchers.Default + job).async {
                         val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                                 endTime, it).await()
                         //val result = measurement.data.groupBy { it.formula }

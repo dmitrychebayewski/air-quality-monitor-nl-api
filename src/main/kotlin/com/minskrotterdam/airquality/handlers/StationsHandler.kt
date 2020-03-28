@@ -7,10 +7,7 @@ import com.minskrotterdam.airquality.services.StationsService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.slf4j.LoggerFactory
@@ -43,7 +40,8 @@ class StationsHandler {
             }
             getSafeLaunchRanges(pagination.last_page).forEach { intRange ->
                 intRange.map {
-                    CoroutineScope(Dispatchers.Default).async {
+                    val job = Job()
+                    CoroutineScope(Dispatchers.Default + job).async {
                         val stations = StationsService().getStations(it).await()
                         val locatedStations = stations.data.filter { it.location.toLowerCase().contains(location) }
                         mutex.withLock {

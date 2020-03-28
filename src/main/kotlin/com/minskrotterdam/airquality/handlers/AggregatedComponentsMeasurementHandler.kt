@@ -11,10 +11,7 @@ import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import ru.gildor.coroutines.retrofit.await
@@ -84,7 +81,8 @@ class AggregatedComponentsMeasurementHandler {
 
             val mutex = Mutex()
             resultMap.keys.map {
-                CoroutineScope(Dispatchers.Default).async {
+                val job = Job()
+                CoroutineScope(Dispatchers.Default + job).async {
                     val aggregateBy = resultMap[it]?.aggregateBy(by)
                     if (aggregateBy != null) {
                         val aggregatedData = aggregateBy[0]
