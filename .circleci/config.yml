@@ -40,3 +40,14 @@ jobs:
 
       # run tests!
       - run: gradle test
+workflows:
+  version: 2
+  nightly:
+    triggers:
+        - schedule:
+            cron: "0 4 * * *"
+            filters:
+              branches:
+                only:
+                  - master
+                  - develop
