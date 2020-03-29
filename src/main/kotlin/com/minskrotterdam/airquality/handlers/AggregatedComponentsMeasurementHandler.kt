@@ -82,10 +82,11 @@ class AggregatedComponentsMeasurementHandler {
             val mutex = Mutex()
             resultMap.keys.map {
                 val job = Job()
-                CoroutineScope(Dispatchers.Default + job).async {
+                CoroutineScope(Dispatchers.IO + job).async {
                     val aggregateBy = resultMap[it]?.aggregateBy(by)
                     if (aggregateBy != null) {
                         val aggregatedData = aggregateBy[0]
+
                         val stationDetails = (StationInfoService().getStationDetails(aggregatedData.station_number)).await().data
                         val geometry = stationDetails.geometry
                         val whereMeasured = stationDetails.location

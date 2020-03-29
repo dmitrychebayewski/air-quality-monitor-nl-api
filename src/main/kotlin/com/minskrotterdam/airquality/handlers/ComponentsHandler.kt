@@ -36,7 +36,7 @@ class ComponentsHandler {
         getSafeLaunchRanges(pagination.last_page).forEach {
             it.map {
                 val job = Job()
-                CoroutineScope(Dispatchers.Default + job).async {
+                CoroutineScope(Dispatchers.IO + job).async {
                     val measurement = ComponentsService().getPollutants(it).await()
                     mutex.withLock {
                         response.write(",")

@@ -76,7 +76,7 @@ class MeasurementsHandler {
             getSafeLaunchRanges(pagination.last_page).forEach { it ->
                 it.map {
                     val job = Job()
-                    CoroutineScope(Dispatchers.Default + job).async {
+                    CoroutineScope(Dispatchers.IO + job).async {
                         val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                                 endTime, it).await()
                         //val result = measurement.data.groupBy { it.formula }
