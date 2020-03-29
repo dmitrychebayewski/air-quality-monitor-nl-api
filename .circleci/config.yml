@@ -42,6 +42,8 @@ jobs:
       - run: gradle test
 workflows:
   version: 2
+  jobs:
+    - build
   nightly:
     triggers:
         - schedule:
