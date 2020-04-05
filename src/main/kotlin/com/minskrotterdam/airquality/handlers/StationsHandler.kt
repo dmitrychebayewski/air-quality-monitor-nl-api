@@ -14,6 +14,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import org.apache.commons.collections4.Trie
+import org.apache.commons.collections4.trie.PatriciaTrie
 import org.slf4j.LoggerFactory
 import ru.gildor.coroutines.retrofit.await
 
@@ -45,12 +46,13 @@ class StationsHandler {
         validateNumber(ctx.queryParam("lng")[0])
     }
 
-   fun initStationsCache(receiver: Trie<String, ExtData>) {
+   suspend fun initStationsCache(): Trie<String, ExtData> {
         val job = Job()
-        CoroutineScope(Dispatchers.IO + job).async {
-            getStationsCache(receiver)
-        }
-    }
+       return CoroutineScope(Dispatchers.IO + job).async {
+           val stationsCache = getStationsCache()
+           stationsCache
+       }.await()
+   }
 
     private fun withFilter(ctx: RoutingContext): Boolean {
         return ctx.pathParam("location").toLowerCase() != "all"
@@ -146,10 +148,12 @@ class StationsHandler {
         }
     }
 
-    private suspend fun getStationsCache(cache: Trie<String, ExtData>) {
+    private suspend fun getStationsCache(): Trie<String, ExtData> {
+        val result = mutableListOf<ExtData>()
+        val trie: Trie<String, ExtData> = PatriciaTrie()
         val firstPage = StationsService().getStations(1).await()
-        mutableListOf<ExtData>()
         val safeLaunchRanges = getSafeLaunchRanges(firstPage.data.size + 1)
+        val m = Mutex()
         safeLaunchRanges.forEach { intRange ->
             intRange.map {
                 val job = Job()
@@ -158,10 +162,10 @@ class StationsHandler {
                     val stationDetails = StationInfoService().getStationDetails(stationData.number).await()
                     val rawCoordinates = stationDetails.data.geometry.coordinates
                     val coordinates = Coordinates(rawCoordinates[0], rawCoordinates[1])
-
                     val element = ExtData(stationData.number, stationData.location, stationDetails.data.municipality, coordinates, stationDetails.data.components)
-                    cache.put(element.coordinates.lat.toString(), element)
-
+                    m.withLock {
+                        result.add(element)
+                    }
                 }
             }.awaitAll()
         }
@@ -180,14 +184,21 @@ class StationsHandler {
                                 val stationDetails = StationInfoService().getStationDetails(stationData.number).await()
                                 val rawCoordinates = stationDetails.data.geometry.coordinates
                                 val coordinates = Coordinates(rawCoordinates[0], rawCoordinates[1])
-
                                 val element = ExtData(stationData.number, stationData.location, stationDetails.data.municipality, coordinates, stationDetails.data.components)
-                                cache.put(element.coordinates.lat.toString(), element)
+                                m.withLock {
+                                    result.add(element)
+                                }
                             }
                         }.awaitAll()
                     }
                 }
             }.awaitAll()
+            m.withLock {
+                result.forEach {
+                    trie.put(it.coordinates.lat.toString(), it)
+                }
+            }
         }
+        return trie
     }
 }
