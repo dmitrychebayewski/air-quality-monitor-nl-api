@@ -49,15 +49,15 @@ class StationsServiceIT : AbstractHttpServiceIT() {
         stations.forEach { station -> ctx.assertTrue(station.location.toLowerCase().contains(LOCATION)) }
     }
 
-    @Test
-    fun testIsGivingValidLocation(ctx: TestContext) {
-        val entity = httpGet(urlNearestToZuiderterras()).entity
-        val content = ByteArrayOutputStream()
-        entity.writeTo(content)
-        println(content)
-        val stations = Gson().fromJson(content.toString(), Array<Data>::class.java)
-        stations.forEach { station -> ctx.assertEquals(station.location, PLEINWEG_LOCATION) }
-    }
+//    @Test
+//    fun testIsGivingValidLocation(ctx: TestContext) {
+//        val entity = httpGet(urlNearestToZuiderterras()).entity
+//        val content = ByteArrayOutputStream()
+//        entity.writeTo(content)
+//        println(content)
+//        val stations = Gson().fromJson(content.toString(), Array<Data>::class.java)
+//        stations.forEach { station -> ctx.assertEquals(station.location, PLEINWEG_LOCATION) }
+//    }
 
     @After
     fun tearDown(ctx: TestContext) {
