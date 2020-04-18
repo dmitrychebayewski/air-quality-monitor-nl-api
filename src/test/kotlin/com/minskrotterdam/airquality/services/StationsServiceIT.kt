@@ -7,7 +7,9 @@ import com.minskrotterdam.airquality.models.stations.Data
 import com.minskrotterdam.airquality.routes.STATIONS_PATH
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -30,7 +32,9 @@ class StationsServiceIT : AbstractHttpServiceIT() {
     @Test
     fun testLoadStationsCache(ctx: TestContext) {
         runBlocking {
-            CacheHandler().initStationsCache()
+            withContext(Dispatchers.Default) {
+                CacheHandler().initStationsCache()
+            }
         }
         ctx.assertEquals(95, stationsCache.keys.size, "It should be loaded")
     }
