@@ -1,8 +1,8 @@
 package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
+import com.minskrotterdam.airquality.cache.StationsCache
 import com.minskrotterdam.airquality.handlers.CacheHandler
-import com.minskrotterdam.airquality.handlers.stationsCache
 import com.minskrotterdam.airquality.models.stations.Data
 import com.minskrotterdam.airquality.routes.STATIONS_PATH
 import io.vertx.ext.unit.TestContext
@@ -36,7 +36,7 @@ class StationsServiceIT : AbstractHttpServiceIT() {
                 CacheHandler().initStationsCache()
             }
         }
-        ctx.assertEquals(95, stationsCache.keys.size, "It should be loaded")
+        ctx.assertNotNull(StationsCache.searchByLatLng("51.9236286", "4.4083969"), "It should be loaded")
     }
 
     @Test

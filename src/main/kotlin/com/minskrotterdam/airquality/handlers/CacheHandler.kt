@@ -1,5 +1,6 @@
 package com.minskrotterdam.airquality.handlers
 
+import com.minskrotterdam.airquality.cache.StationsCache
 import com.minskrotterdam.airquality.models.stations.Coordinates
 import com.minskrotterdam.airquality.models.stations.ExtData
 import com.minskrotterdam.airquality.models.stations.Stations
@@ -8,8 +9,6 @@ import com.minskrotterdam.airquality.services.StationsService
 import org.apache.commons.collections4.Trie
 import org.apache.commons.collections4.trie.PatriciaTrie
 import ru.gildor.coroutines.retrofit.await
-
-val stationsCache: Trie<String, ExtData> = PatriciaTrie()
 
 class CacheHandler {
 
@@ -28,7 +27,7 @@ class CacheHandler {
             val rawCoordinates = stationDetails.data.geometry.coordinates
             val coordinates = Coordinates(rawCoordinates[0], rawCoordinates[1])
             val element = ExtData(stationInfo.number, stationInfo.location, stationDetails.data.municipality, coordinates, stationDetails.data.components)
-            stationsCache[element.coordinates.lat.toString()] = element
+            StationsCache.put(element.coordinates.lat.toString(), element)
         }
     }
 }
