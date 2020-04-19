@@ -7,6 +7,7 @@ import io.vertx.core.Vertx
 import io.vertx.ext.web.Router
 
 val STATIONS_PATH = "$API_ENDPOINT/stations"
+val STATIONS_COORDINATES_PATH = "$STATIONS_PATH/coordinates"
 val STATION_PATH = "$API_ENDPOINT/station"
 
 val COMPONENTS_PATH = "$API_ENDPOINT/components"
@@ -26,6 +27,7 @@ class Routes(private val vertx: Vertx) {
         return Router.router(vertx).apply {
             route().handler(configHandlers.corsHandler)
             route().handler(configHandlers.bodyHandler)
+            get(STATIONS_COORDINATES_PATH).coroutineHandler { StationsHandler().getNearestStation(it) }
             get("$STATIONS_PATH/:location").coroutineHandler { StationsHandler().stationsHandler(it) }
             get("$STATION_PATH/:station_number").coroutineHandler { StationInformationHandler().stationInformationHandler(it) }
             get(COMPONENTS_PATH).coroutineHandler { ComponentsHandler().pollutantComponentsHandler(it) }
