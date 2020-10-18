@@ -36,7 +36,7 @@ class StationsServiceIT : AbstractHttpServiceIT() {
                 CacheHandler().initStationsCache()
             }
         }
-        ctx.assertNotNull(StationsCache.searchByLatLng("51.9236286", "4.4083969"), "It should be loaded")
+        ctx.assertNotNull(StationsCache.getStation("51.9236286", "4.4083969"), "It should be loaded")
     }
 
     @Test
