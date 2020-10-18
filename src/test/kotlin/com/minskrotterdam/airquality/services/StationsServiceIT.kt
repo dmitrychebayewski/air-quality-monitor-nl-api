@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream
 
 @RunWith(VertxUnitRunner::class)
 class StationsServiceIT : AbstractHttpServiceIT() {
-    val LOCATION = "amsterdam"
+    private val LOCATION = "amsterdam"
 
     private fun stationsUrl(): String {
         return "${TEST_API_URL}:${port}/${STATIONS_PATH}/amsterdam"
