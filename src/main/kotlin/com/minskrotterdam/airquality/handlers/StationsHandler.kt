@@ -57,7 +57,7 @@ class StationsHandler {
             val latitude = ctx.queryParam("lat")[0]
             val longitude = ctx.queryParam("lng")[0]
             response.isChunked = true
-            result.add(StationsCache.getStation(latitude, longitude))
+            result.add(StationsCache.searchByLatLng(latitude, longitude))
             response.write(Json.encode(result))
             response.endAwait()
         } finally {

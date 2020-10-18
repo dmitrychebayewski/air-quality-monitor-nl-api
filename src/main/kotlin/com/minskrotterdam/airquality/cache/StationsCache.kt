@@ -5,42 +5,34 @@ import com.minskrotterdam.airquality.models.stations.Coordinates
 import com.minskrotterdam.airquality.models.stations.ExtData
 import org.apache.commons.collections4.Trie
 import org.apache.commons.collections4.trie.PatriciaTrie
-import java.math.MathContext
-import java.math.RoundingMode
+import java.util.*
 
 object StationsCache {
-    private var stationsByLtd: Trie<String, ExtData> = PatriciaTrie()
+    private var stationsCache: Trie<String, ExtData> = PatriciaTrie()
 
-    fun put(data: ExtData) {
-        stationsByLtd[data.coordinates.lat.toString()] = data
+    fun prefixMap(prefix: String): SortedMap<String, ExtData> {
+        return stationsCache.prefixMap(prefix)
     }
 
-    fun getStation(lat: String, lng: String): ExtData {
+    fun put(key: String, data: ExtData) {
+        stationsCache[key] = data
+    }
+
+    fun size(): Int {
+        return stationsCache.size
+    }
+
+    fun searchByLatLng(lat: String, lng: String): ExtData {
         var endInclusive = 4
-        val latRound = "%.4f".format(lat.toBigDecimal().round(MathContext(6, RoundingMode.FLOOR)))
-        val latRoundTruncated = lat.substring(0..lat.indexOf(".") - 1)
-        val latRoundHalfEven = "%.0f".format(lat.toBigDecimal().round(MathContext(0, RoundingMode.HALF_EVEN)))
-        var extendPrefixMap = false
-        if (!latRoundTruncated.equals(latRoundHalfEven)) {
-            extendPrefixMap = true
-        } else {
-            endInclusive--
-        }
-        var result = stationsByLtd.prefixMap(latRound)
+        val latRound = "%.4f".format(lat.toDouble())
+        var result = stationsCache.prefixMap(latRound)
+        // println("${lat}.substr(${0..endInclusive}) /${lat.substring(0..endInclusive)}/ -> ${result.size} results")
         while (result.isEmpty() && endInclusive > 0) {
-            result = stationsByLtd.prefixMap(lat.substring(0..--endInclusive))
+            result = stationsCache.prefixMap(lat.substring(0..--endInclusive))
             // println("${lat}.substr(${0..endInclusive}) /${lat.substring(0..endInclusive)}/ -> ${result.size} results")
         }
         val coordinates = Coordinates(lng.toDouble(), lat.toDouble())
-        val candidates: MutableList<ExtData> = mutableListOf<ExtData>()
-        candidates.add(result.values.reduce { acc, data -> withClosestGreatCircleDistance(acc, data, coordinates) })
-        if (extendPrefixMap) {
-            val prefixMap = stationsByLtd.prefixMap(latRoundHalfEven)
-            if (!prefixMap.isEmpty()) {
-                candidates.add(prefixMap.values.reduce { acc, data -> withClosestGreatCircleDistance(acc, data, coordinates) })
-            }
-        }
-        return candidates.reduce { acc, data -> withClosestGreatCircleDistance(acc, data, coordinates) }
+        return result.values.reduce { acc, data -> withClosestGreatCircleDistance(acc, data, coordinates) }
     }
 
     private fun withClosestGreatCircleDistance(o1: ExtData, o2: ExtData, coordinates: Coordinates): ExtData {
