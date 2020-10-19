@@ -1,1 +1,1 @@
-web: java -jar build/libs/app-shadow.jar
+web: java -Xms256m -Xmx1024m -jar build/libs/app-shadow.jar
