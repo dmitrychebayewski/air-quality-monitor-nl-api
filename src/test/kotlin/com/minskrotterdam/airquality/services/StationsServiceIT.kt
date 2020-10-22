@@ -18,7 +18,7 @@ import java.io.ByteArrayOutputStream
 
 @RunWith(VertxUnitRunner::class)
 class StationsServiceIT : AbstractHttpServiceIT() {
-    val LOCATION = "amsterdam"
+    private val LOCATION = "amsterdam"
 
     private fun stationsUrl(): String {
         return "${TEST_API_URL}:${port}/${STATIONS_PATH}/amsterdam"
@@ -36,7 +36,7 @@ class StationsServiceIT : AbstractHttpServiceIT() {
                 CacheHandler().initStationsCache()
             }
         }
-        ctx.assertNotNull(StationsCache.searchByLatLng("51.9236286", "4.4083969"), "It should be loaded")
+        ctx.assertNotNull(StationsCache.getStation("51.9236286", "4.4083969"), "It should be loaded")
     }
 
     @Test
