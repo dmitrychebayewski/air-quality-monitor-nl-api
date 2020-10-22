@@ -1,6 +1,6 @@
 # Air quality monitoring API written in Kotlin  🛠
 
-Version 0.9
+Version 0.95
 
 ## Purpose
 

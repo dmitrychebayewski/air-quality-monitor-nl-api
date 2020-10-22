@@ -109,8 +109,14 @@ test {
 
 }
 
+task copyAppYaml(type: Copy) {
+    from file("src/main/appengine/app.yaml")
+    into file("$buildDir/libs/")
+}
+
 // Naming and packaging settings for the "shadow jar".
 shadowJar {
+    dependsOn copyAppYaml
     baseName = 'app'
     classifier = 'shadow'
 

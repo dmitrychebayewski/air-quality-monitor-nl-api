@@ -1,0 +1,2 @@
+runtime: java11
+entrypoint: 'java "-Dio.netty.tryReflectionSetAccessible=true" --illegal-access=warn --add-opens java.base/jdk.internal.misc=ALL-UNNAMED --add-exports java.base/jdk.internal.misc=ALL-UNNAMED  -jar app-shadow.jar'
