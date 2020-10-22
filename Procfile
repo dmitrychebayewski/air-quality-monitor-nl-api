@@ -1,1 +1,1 @@
-web: java -Xms256m -Xmx1024m -jar build/libs/app-shadow.jar
+web: java -XX:+UseContainerSupport -jar build/libs/app-shadow.jar
