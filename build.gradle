@@ -1,30 +1,31 @@
 buildscript {
     //https://mvnrepository.com/artifact/org.jetbrains.kotlin/kotlin-stdlib
-    ext.kotlin_version = '1.3.72'
-    https://mvnrepository.com/artifact/io.vertx/vertx-core
-    ext.vertx_version = '3.9.0'
-    https://mvnrepository.com/artifact/com.github.jengelman.gradle.plugins/shadow?repo=gradle-plugins
-    ext.shadow_version = '5.2.0'
-    https://mvnrepository.com/artifact/org.gradle/test-retry-gradle-plugin
-    ext.retry_gradle_tests = '1.1.4'
-    https://mvnrepository.com/artifact/org.slf4j/slf4j-api
+    ext.kotlin_version = '1.4.10'
+    //https://mvnrepository.com/artifact/io.vertx/vertx-core
+    ext.vertx_version = '3.9.4'
+    //https://mvnrepository.com/artifact/com.github.jengelman.gradle.plugins/shadow?repo=gradle-plugins
+    ext.shadow_version = '6.1.0'
+    //https://mvnrepository.com/artifact/org.gradle/test-retry-gradle-plugin
+    ext.retry_gradle_tests = '1.1.9'
+    //https://mvnrepository.com/artifact/org.slf4j/slf4j-api
     ext.slf4j_version = '1.7.30' // Logging in the app
-    https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
+    //https://mvnrepository.com/artifact/ch.qos.logback/logback-classic
     ext.logback_version = '1.2.3' // Logging to a file, implements SLF4J API, so we can use it with slf4j
     //https://mvnrepository.com/artifact/com.squareup.retrofit2/retrofit
-    ext.retrofit_version = '2.8.1' // HTTP client
-    http://mvnrepository.com/artifact/ru.gildor.coroutines/kotlin-coroutines-retrofit
+    ext.retrofit_version = '2.9.0' // HTTP client
+    // http://mvnrepository.com/artifact/ru.gildor.coroutines/kotlin-coroutines-retrofit
     ext.retrofit_coroutines_version = '1.1.0' // makes retrofit's calls work with coroutines
+    //https://mvnrepository.com/artifact/com.github.salomonbrys.kotson/kotson
     ext.kotson_version = '2.5.0' // JSON (w/ Gson) parser
-    https://mvnrepository.com/artifact/junit/junit
-    ext.junit_version = '4.13'
+    //https://mvnrepository.com/artifact/junit/junit
+    ext.junit_version = '4.13.1'
     //https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient
-    ext.apache_http_client_version = '4.5.12'
-    https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
+    ext.apache_http_client_version = '4.5.13'
+    //https://mvnrepository.com/artifact/org.hamcrest/hamcrest-all
     ext.hamcrest_all_version = '1.3'
-    https://mvnrepository.com/artifact/io.vertx/vertx-unit
-    ext.vertx_unit_version = '3.9.0'
-    https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+    //https://mvnrepository.com/artifact/io.vertx/vertx-unit
+    ext.vertx_unit_version = '3.9.4'
+    //https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
     ext.apache_commons_colections_version = '4.4'
 
     repositories {
@@ -96,6 +97,7 @@ compileTestKotlin {
 test {
     useJUnit()
     //scanForTestClasses = false
+    allJvmArgs = ['-Dio.netty.tryReflectionSetAccessible = true', '--illegal-access=warn']
     testLogging.showStandardStreams = true
     retry {
         maxRetries = 3
