@@ -81,19 +81,31 @@ jobs:
             - v1-libs
       - run: |
           pwd
-          echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
-          gcloud projects list
+          echo ${GCLOUD_SERVICE_KEY} | base64 --decode | gcloud auth activate-service-account --key-file=-
+          gcloud --quiet config set project ${GCLOUD_PROJECT}
+      - deploy: |
           cd /home/circleci/repo/build/libs
-          ls
+          gcloud app deploy
+
 workflows:
   version: 2
   commit:
     jobs:
       - test
-      - build
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
       - deploy:
           requires:
             - build
+          filters:
+            branches:
+              only:
+                - master
   nightly:
     triggers:
       - schedule:
