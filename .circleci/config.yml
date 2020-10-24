@@ -82,7 +82,8 @@ jobs:
           paths:
             - ~/build/libs
           key: v1-libs-{{ checksum "~/build/libs/app.yaml" }}
-      -run: cd ~/build/libs && cat app.yaml
+      -run: cd ~/build/libs
+      -run: cat app.yaml
 
 workflows:
   version: 2
