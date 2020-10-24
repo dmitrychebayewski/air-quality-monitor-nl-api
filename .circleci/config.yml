@@ -77,13 +77,13 @@ jobs:
 
       # compile
       - run: gradle stage
-      - run: cd ~/repo/build/libs
-      - run: ls
-      - run: cd ~/repo
+      - run: |
+          cd ~/repo/build/libs
+          cat app.yaml
       - save_cache:
           paths:
             - ~/repo/build/libs
-          key: v1-libs-{{ checksum "~/build/libs/app.yaml" }}
+          key: v1-libs-{{ checksum "~/repo/build/libs/app.yaml" }}
 
 workflows:
   version: 2
