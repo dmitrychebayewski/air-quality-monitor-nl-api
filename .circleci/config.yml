@@ -79,7 +79,6 @@ jobs:
             - v1-libs-{{ checksum "~/repo/src/main/appengine/app.yaml" }}
             # fallback to using the latest cache if no exact match is found
             - v1-libs
-      - run:
       - run: |
           cd ~/repo/build/libs
           ls
