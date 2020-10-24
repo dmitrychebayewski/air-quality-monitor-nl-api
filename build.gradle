@@ -96,6 +96,7 @@ compileTestKotlin {
 test {
     useJUnit()
     //scanForTestClasses = false
+    allJvmArgs = ['-Dio.netty.tryReflectionSetAccessible = true', '--illegal-access=warn']
     testLogging.showStandardStreams = true
     retry {
         maxRetries = 3
