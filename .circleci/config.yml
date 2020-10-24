@@ -78,7 +78,7 @@ jobs:
       # compile
       - run: gradle stage
       - run: cd ~/repo/build/libs
-      - run: cat app.yaml
+      - run: ls
       - run: cd ~/repo
       - save_cache:
           paths:
