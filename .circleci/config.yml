@@ -58,7 +58,6 @@ jobs:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
-
     steps:
       - checkout
 
@@ -78,12 +77,13 @@ jobs:
 
       # compile
       - run: gradle stage
+      - run: cd ~/build/libs
+      - run: cat app.yaml
+      - run: cd ~/
       - save_cache:
           paths:
             - ~/build/libs
           key: v1-libs-{{ checksum "~/build/libs/app.yaml" }}
-      -run: cd ~/build/libs
-      -run: cat app.yaml
 
 workflows:
   version: 2
