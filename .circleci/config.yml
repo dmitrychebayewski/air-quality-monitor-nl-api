@@ -44,46 +44,47 @@ jobs:
           path: build/test-results
   build:
     docker:
-      # specify the version you desire here
       - image: circleci/openjdk:11
-
-      # Specify service dependencies here if necessary
-      # CircleCI maintains a library of pre-built images
-      # documented at https://circleci.com/docs/2.0/circleci-images/
-      # - image: circleci/postgres:9.4
-
     working_directory: ~/repo
-
     environment:
-      # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
       TERM: dumb
     steps:
       - checkout
-
-      # Download and cache dependencies
       - restore_cache:
           keys:
             - v1-dependencies-{{ checksum "build.gradle" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
-
       - run: gradle dependencies
-
       - save_cache:
           paths:
             - ~/.gradle
           key: v1-dependencies-{{ checksum "build.gradle" }}
-
-      # compile
       - run: gradle stage
-      - run: |
-          cd ~/repo/build/libs
-          cat app.yaml
       - save_cache:
           paths:
             - ~/repo/build/libs
-          key: v1-libs-{{ checksum "~/repo/build/libs/app.yaml" }}
+          key: v1-libs-{{ checksum "~/repo/src/main/appengine/app.yaml" }}
+  deploy:
+    docker:
+      # specify the version you desire here
+      - image: google/cloud-sdk
+    working_directory: ~/repo
+    steps:
+      - checkout
+      # Download and cache dependencies
+      - restore_cache:
+          keys:
+            - v1-libs-{{ checksum "~/repo/src/main/appengine/app.yaml" }}
+            # fallback to using the latest cache if no exact match is found
+            - v1-libs
+      - run:
+      - run: |
+          cd ~/repo/build/libs
+          ls
+          echo $GCLOUD_SERVICE_KEY | base64 --decode | gcloud auth activate-service-account --key-file=-
+          gcloud projects list
 
 workflows:
   version: 2
@@ -91,6 +92,9 @@ workflows:
     jobs:
       - test
       - build
+      - deploy:
+          requires:
+            - build
   nightly:
     triggers:
       - schedule:
