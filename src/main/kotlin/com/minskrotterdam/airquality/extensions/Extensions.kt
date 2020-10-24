@@ -10,6 +10,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import org.slf4j.LoggerFactory
+
 
 fun HttpServerResponse.endWithJson(obj: Any?, statusCode: Int = 200) {
     setStatusCode(statusCode)
@@ -24,6 +26,8 @@ fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) {
             try {
                 fn(ctx)
             } catch (e: Exception) {
+                val logger = LoggerFactory.getLogger("VertxServer")
+                logger.error("Failure when launching a  coroutine {}", e)
                 ctx.fail(e)
             }
         }
@@ -37,7 +41,11 @@ fun <T> safeLaunch(ctx: RoutingContext, body: suspend () -> T) {
         try {
             body()
         } catch (e: Exception) {
-            ctx.response().endWithJson(CommonServiceError(e.localizedMessage, 501))
+            val logger = LoggerFactory.getLogger("VertxServer")
+            logger.error("Failure when launching a  coroutine {}", e)
+            var message = e.message
+            if (message == null) message = e.javaClass.name
+            ctx.response().endWithJson(message?.let { CommonServiceError(it, 501) })
         }
     }
 }
