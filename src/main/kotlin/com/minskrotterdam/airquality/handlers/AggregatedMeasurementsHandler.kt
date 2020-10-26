@@ -109,10 +109,8 @@ class AggregatedMeasurementsHandler {
                     }
                 }.awaitAll()
             }
-            mutex.withLock {
-                response.write(Json.encode(firstResult.aggregateBy(by)))
-                response.endAwait()
-            }
+            response.write(Json.encode(firstResult.aggregateBy(by)))
+            response.endAwait()
 
         } finally {
             firstResult.clear()

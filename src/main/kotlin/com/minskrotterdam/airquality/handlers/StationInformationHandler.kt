@@ -5,8 +5,6 @@ import com.minskrotterdam.airquality.services.StationInfoService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.gildor.coroutines.retrofit.await
 
 class StationInformationHandler {
@@ -23,10 +21,9 @@ class StationInformationHandler {
         response.isChunked = true
         val stationNr = ctx.pathParam("station_number")
         val stationInfo = StationInfoService().getStationDetails(stationNr).await()
-        val mutex = Mutex()
-        mutex.withLock {
-            response.write(Json.encode(stationInfo))
-            response.endAwait()
-        }
+
+        response.write(Json.encode(stationInfo))
+        response.endAwait()
+
     }
 }

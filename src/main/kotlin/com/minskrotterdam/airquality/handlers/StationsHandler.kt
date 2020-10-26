@@ -130,10 +130,10 @@ class StationsHandler {
                     }
                 }.awaitAll()
             }
-            mutex.withLock {
-                response.write(Json.encode(result))
-                response.endAwait()
-            }
+
+            response.write(Json.encode(result))
+            response.endAwait()
+
         } finally {
             result.clear()
         }

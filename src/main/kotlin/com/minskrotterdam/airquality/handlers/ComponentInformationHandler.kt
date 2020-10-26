@@ -5,8 +5,6 @@ import com.minskrotterdam.airquality.services.ComponentInformationService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import ru.gildor.coroutines.retrofit.await
 
 class ComponentInformationHandler {
@@ -30,11 +28,10 @@ class ComponentInformationHandler {
         response.isChunked = true
         val formula = ctx.pathParam("formula")
         val pollutantInfo = ComponentInformationService().getPollutantInfo(formula).await()
-        val mutex = Mutex()
-        mutex.withLock {
-            response.write(Json.encode(pollutantInfo))
-            response.endAwait()
-        }
+
+        response.write(Json.encode(pollutantInfo))
+        response.endAwait()
+
     }
 
     private suspend fun getUpperPollutantLimit(ctx: RoutingContext) {
@@ -42,10 +39,9 @@ class ComponentInformationHandler {
         response.isChunked = true
         val formula = ctx.pathParam("formula")
         val pollutantInfo = ComponentInformationService().getPollutantInfo(formula).await()
-        val mutex = Mutex()
-        mutex.withLock {
-            response.write(Json.encode(pollutantInfo.data.limits.last()))
-            response.endAwait()
-        }
+
+        response.write(Json.encode(pollutantInfo.data.limits.last()))
+        response.endAwait()
+
     }
 }
