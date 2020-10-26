@@ -79,17 +79,16 @@ class MeasurementsHandler {
                     CoroutineScope(Dispatchers.IO + job).async {
                         val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
                                 endTime, it).await()
-                        //val result = measurement.data.groupBy { it.formula }
                         mutex.withLock {
                             result.addAll(measurement.data)
                         }
                     }
                 }.awaitAll()
             }
-            mutex.withLock {
-                response.write(Json.encode(result.groupBy { it.formula }))
-                response.endAwait()
-            }
+
+            response.write(Json.encode(result.groupBy { it.formula }))
+            response.endAwait()
+
 
         } finally {
             result.clear()

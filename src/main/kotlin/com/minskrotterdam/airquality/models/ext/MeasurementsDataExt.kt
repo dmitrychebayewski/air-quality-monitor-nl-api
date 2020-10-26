@@ -14,7 +14,7 @@ private fun Data.minOf(a: Data): Data {
 }
 
 private fun List<Data>.minByComponent(): MutableList<Data> {
-    return groupBy { it.formula }.toSortedMap().values.map { it ->
+    return groupBy { it.formula }.toSortedMap().values.map {
         it.reduce { ac, data ->
             ac.minOf(data)
         }
@@ -22,7 +22,7 @@ private fun List<Data>.minByComponent(): MutableList<Data> {
 }
 
 private fun List<Data>.maxByComponent(): MutableList<Data> {
-    return groupBy { it.formula }.toSortedMap().values.map { it ->
+    return groupBy { it.formula }.toSortedMap().values.map {
         it.reduce { ac, data ->
             ac.maxOf(data)
         }
@@ -31,14 +31,14 @@ private fun List<Data>.maxByComponent(): MutableList<Data> {
 
 private fun List<Data>.averageValueByComponent(): MutableList<Data> {
     val reducer = { a: Double, b: Double -> a + b }
-    return groupBy { it.formula }.toSortedMap().values.map { it ->
+    return groupBy { it.formula }.toSortedMap().values.map {
         val size = it.size
         val reduce = it.reduce { ac, data ->
             Data(ac.formula,
                     ac.station_number,
                     ac.timestamp_measured, reducer.invoke(ac.value, data.value))
         }
-        reduce.value = "%.1f".format(reduce.value / size).toDouble()
+        reduce.value = "%.1f".format(reduce.value / size).replace(',', '.').toDouble()
         reduce
     }.toMutableList()
 }
