@@ -1,13 +1,11 @@
 # Air quality monitoring API written in Kotlin  🛠
 
-Version 0.95
-
 ## Purpose
 
 The project is a polygon for learning the art of building and testing an API.
 
 Using the well-known ope service [LUCHTMEETNET 2020 OPENAPI](https://api-docs.luchtmeetnet.nl/),
-I have launched the service that consumes and aggregates the data, produced by LuchtmeeNet open API.
+I have launched the stateless service that aggregates the data, produced by LuchtmeeNet open API.
 
 ## Info from Luchtmeetnet
 
@@ -27,9 +25,9 @@ or if you want to know the trends of air contamination in your region.
 ## Software Stack
 
 * Java JDK 8+/Kotlin as main execution environment;
+* Vert.X - Polyglot lightweight asynchronous event-driven platform that runs the stateless services;
 * Gradle 6 as main build tool;
-* Vert.X Unit and JUnit 4 as testing framework;
-* (TODO) Docker is potentially supported if you intend trying out the demo on Mac / Linux 
+* Vert.X Unit and JUnit 4 as testing framework
 
 ## Setup
 
