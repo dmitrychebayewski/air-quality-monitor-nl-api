@@ -46,11 +46,10 @@ class ComponentsHandler {
                 }
             }.awaitAll()
         }
-        mutex.withLock {
-            response.writeAwait("]")
+        response.writeAwait("]")
             if (!response.ended()) {
                 response.endAwait()
             }
-        }
+
     }
 }

@@ -133,7 +133,6 @@ class StationsHandler {
                     }
                 }.awaitAll()
             }
-
             response.writeAwait(Json.encode(result))
             if (!response.ended()) {
                 response.endAwait()
