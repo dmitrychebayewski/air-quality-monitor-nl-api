@@ -1,6 +1,6 @@
 runtime: java11
 
 env_variables:
-  RELEASE_VERSION: "6.5.2"
+  RELEASE_VERSION: "6.6.1"
 
 entrypoint: 'java "-Dio.netty.tryReflectionSetAccessible=true" --illegal-access=warn --add-opens java.base/jdk.internal.misc=ALL-UNNAMED --add-exports java.base/jdk.internal.misc=ALL-UNNAMED  -jar app-shadow.jar'

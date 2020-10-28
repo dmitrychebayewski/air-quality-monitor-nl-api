@@ -10,6 +10,7 @@ import com.minskrotterdam.airquality.services.StationsService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
+import io.vertx.kotlin.core.http.writeAwait
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -58,8 +59,10 @@ class StationsHandler {
             val longitude = ctx.queryParam("lng")[0]
             response.isChunked = true
             result.add(StationsCache.getStation(latitude, longitude))
-            response.write(Json.encode(result))
-            response.endAwait()
+            response.writeAwait(Json.encode(result))
+            if (!response.ended()) {
+                response.endAwait()
+            }
         } finally {
             result.clear()
         }
@@ -131,8 +134,10 @@ class StationsHandler {
                 }.awaitAll()
             }
 
-            response.write(Json.encode(result))
-            response.endAwait()
+            response.writeAwait(Json.encode(result))
+            if (!response.ended()) {
+                response.endAwait()
+            }
 
         } finally {
             result.clear()

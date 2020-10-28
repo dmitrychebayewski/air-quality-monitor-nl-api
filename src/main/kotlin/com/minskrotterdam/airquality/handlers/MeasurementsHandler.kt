@@ -9,6 +9,7 @@ import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
+import io.vertx.kotlin.core.http.writeAwait
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -85,11 +86,10 @@ class MeasurementsHandler {
                     }
                 }.awaitAll()
             }
-
-            response.write(Json.encode(result.groupBy { it.formula }))
-            response.endAwait()
-
-
+            response.writeAwait(Json.encode(result.groupBy { it.formula }))
+            if (!response.ended()) {
+                response.endAwait()
+            }
         } finally {
             result.clear()
         }

@@ -11,6 +11,7 @@ import io.vertx.core.MultiMap
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
+import io.vertx.kotlin.core.http.writeAwait
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -102,8 +103,10 @@ class AggregatedComponentsMeasurementHandler {
                     }
                 }
             }.awaitAll()
-            response.write(Json.encode(firstResult))
-            response.endAwait()
+            response.writeAwait(Json.encode(firstResult))
+            if (!response.ended()) {
+                response.endAwait()
+            }
         } finally {
             firstResult.clear()
         }
