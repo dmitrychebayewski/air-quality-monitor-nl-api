@@ -5,6 +5,7 @@ import com.minskrotterdam.airquality.services.StationInfoService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
+import io.vertx.kotlin.core.http.writeAwait
 import ru.gildor.coroutines.retrofit.await
 
 class StationInformationHandler {
@@ -22,8 +23,10 @@ class StationInformationHandler {
         val stationNr = ctx.pathParam("station_number")
         val stationInfo = StationInfoService().getStationDetails(stationNr).await()
 
-        response.write(Json.encode(stationInfo))
-        response.endAwait()
+        response.writeAwait(Json.encode(stationInfo))
+        if (!response.ended()) {
+            response.endAwait()
+        }
 
     }
 }

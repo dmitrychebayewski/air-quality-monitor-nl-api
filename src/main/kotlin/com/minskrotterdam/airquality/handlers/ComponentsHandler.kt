@@ -6,6 +6,7 @@ import com.minskrotterdam.airquality.services.ComponentsService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
+import io.vertx.kotlin.core.http.writeAwait
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -29,9 +30,9 @@ class ComponentsHandler {
         val pagination = firstPage.pagination
         val mutex = Mutex()
         mutex.withLock {
-            response.write("[")
+            response.writeAwait("[")
             val groupBy = firstPage.data.groupBy { it.formula }
-            response.write(Json.encode(groupBy))
+            response.writeAwait(Json.encode(groupBy))
         }
         getSafeLaunchRanges(pagination.last_page).forEach {
             it.map {
@@ -39,15 +40,16 @@ class ComponentsHandler {
                 CoroutineScope(Dispatchers.IO + job).async {
                     val measurement = ComponentsService().getPollutants(it).await()
                     mutex.withLock {
-                        response.write(",")
-                        response.write(Json.encode(measurement.data.groupBy { it.formula }))
+                        response.writeAwait(",")
+                        response.writeAwait(Json.encode(measurement.data.groupBy { it.formula }))
                     }
                 }
             }.awaitAll()
         }
-        mutex.withLock {
-            response.write("]")
-            response.endAwait()
-        }
+        response.writeAwait("]")
+            if (!response.ended()) {
+                response.endAwait()
+            }
+
     }
 }

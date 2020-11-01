@@ -14,8 +14,12 @@ import org.slf4j.LoggerFactory
 
 
 fun HttpServerResponse.endWithJson(obj: Any?, statusCode: Int = 200) {
-    setStatusCode(statusCode)
-    putHeader("Content-Type", "application/json; charset=utf-8").end(Json.encodePrettily(obj))
+    if(!headWritten()) {
+        setStatusCode(statusCode)
+    }
+    if(!ended()) {
+        end(Json.encodePrettily(obj))
+    }
 }
 
 fun Route.coroutineHandler(fn: suspend (RoutingContext) -> Unit) {

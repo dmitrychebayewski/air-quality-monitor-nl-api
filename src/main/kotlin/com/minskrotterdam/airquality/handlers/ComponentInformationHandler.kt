@@ -5,6 +5,7 @@ import com.minskrotterdam.airquality.services.ComponentInformationService
 import io.vertx.core.json.Json
 import io.vertx.ext.web.RoutingContext
 import io.vertx.kotlin.core.http.endAwait
+import io.vertx.kotlin.core.http.writeAwait
 import ru.gildor.coroutines.retrofit.await
 
 class ComponentInformationHandler {
@@ -29,8 +30,10 @@ class ComponentInformationHandler {
         val formula = ctx.pathParam("formula")
         val pollutantInfo = ComponentInformationService().getPollutantInfo(formula).await()
 
-        response.write(Json.encode(pollutantInfo))
-        response.endAwait()
+        response.writeAwait(Json.encode(pollutantInfo))
+        if (!response.ended()) {
+            response.endAwait()
+        }
 
     }
 
@@ -40,8 +43,10 @@ class ComponentInformationHandler {
         val formula = ctx.pathParam("formula")
         val pollutantInfo = ComponentInformationService().getPollutantInfo(formula).await()
 
-        response.write(Json.encode(pollutantInfo.data.limits.last()))
-        response.endAwait()
+        response.writeAwait(Json.encode(pollutantInfo.data.limits.last()))
+        if (!response.ended()) {
+            response.endAwait()
+        }
 
     }
 }
