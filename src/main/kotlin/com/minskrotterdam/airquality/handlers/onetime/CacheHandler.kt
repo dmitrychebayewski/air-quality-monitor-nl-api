@@ -1,4 +1,4 @@
-package com.minskrotterdam.airquality.handlers
+package com.minskrotterdam.airquality.handlers.onetime
 
 import com.minskrotterdam.airquality.cache.StationsCache
 import com.minskrotterdam.airquality.models.stations.Coordinates

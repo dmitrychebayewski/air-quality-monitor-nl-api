@@ -2,7 +2,7 @@ package com.minskrotterdam.airquality.services
 
 import com.google.gson.Gson
 import com.minskrotterdam.airquality.cache.StationsCache
-import com.minskrotterdam.airquality.handlers.CacheHandler
+import com.minskrotterdam.airquality.handlers.onetime.CacheHandler
 import com.minskrotterdam.airquality.models.stations.Data
 import com.minskrotterdam.airquality.routes.STATIONS_PATH
 import io.vertx.ext.unit.TestContext

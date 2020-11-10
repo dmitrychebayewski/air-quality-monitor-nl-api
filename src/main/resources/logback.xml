@@ -6,7 +6,7 @@
             <Pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</Pattern>
         </encoder>
     </appender>
-<!--
+
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -22,7 +22,7 @@
             <pattern>%d %-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
     </appender>
--->
+
     <logger name="org.thymeleaf.TemplateEngine" level="INFO"/>
     <!-- <logger name="com.zaxxer.hikari.HikariConfig" level="INFO"/> -->
 

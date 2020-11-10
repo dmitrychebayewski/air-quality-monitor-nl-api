@@ -1,7 +1,7 @@
 package com.minskrotterdam.airquality.math
 
 import com.minskrotterdam.airquality.cache.StationsCache
-import com.minskrotterdam.airquality.handlers.CacheHandler
+import com.minskrotterdam.airquality.handlers.onetime.CacheHandler
 import com.minskrotterdam.airquality.services.AbstractHttpServiceIT
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner

@@ -70,8 +70,8 @@ class StationsHandler {
 
     private suspend fun getStations(ctx: RoutingContext) {
         val result: MutableList<ExtData> = mutableListOf()
+        val response = ctx.response()
         try {
-            val response = ctx.response()
             val location = ctx.pathParam("location").toLowerCase()
             val withFilter = withFilter(ctx)
             response.isChunked = true
@@ -89,7 +89,7 @@ class StationsHandler {
                         val rawCoordinates = stationDetails.data.geometry.coordinates
                         val coordinates = Coordinates(rawCoordinates[0], rawCoordinates[1])
 
-                        mutex.withLock {
+                        mutex.withLock(extendedStationsFirstResult) {
                             val element = ExtData(stationData.number, stationData.location, stationDetails.data.municipality, coordinates, stationDetails.data.components)
                             extendedStationsFirstResult.add(element)
                         }
@@ -97,7 +97,7 @@ class StationsHandler {
                 }.awaitAll()
             }
             val pagination = firstPage.pagination
-            mutex.withLock {
+            mutex.withLock(result) {
                 if (firstStationsResult.isNotEmpty()) {
                     result.addAll(extendedStationsFirstResult)
                 }
@@ -118,14 +118,14 @@ class StationsHandler {
                                     val stationDetails = StationInfoService().getStationDetails(stationData.number).await()
                                     val rawCoordinates = stationDetails.data.geometry.coordinates
                                     val coordinates = Coordinates(rawCoordinates[0], rawCoordinates[1])
-                                    mutex.withLock {
+                                    mutex.withLock(extendedStations) {
                                         val element = ExtData(stationData.number, stationData.location, stationDetails.data.municipality, coordinates, stationDetails.data.components)
                                         extendedStations.add(element)
                                     }
                                 }
                             }.awaitAll()
                         }
-                        mutex.withLock {
+                        mutex.withLock(result) {
                             if (locatedStations.isNotEmpty()) {
                                 result.addAll(extendedStations)
                             }
@@ -134,12 +134,12 @@ class StationsHandler {
                 }.awaitAll()
             }
             response.writeAwait(Json.encode(result))
-            if (!response.ended()) {
-                response.endAwait()
-            }
 
         } finally {
             result.clear()
+            if (!response.ended()) {
+                response.endAwait()
+            }
         }
     }
 }

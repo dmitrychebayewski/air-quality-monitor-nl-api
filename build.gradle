@@ -65,6 +65,7 @@ dependencies {
     compile "io.vertx:vertx-web:$vertx_version"
     compile "io.vertx:vertx-lang-kotlin:$vertx_version"
     compile "io.vertx:vertx-lang-kotlin-coroutines:$vertx_version"
+    compile "io.vertx:vertx-hazelcast:$vertx_version"
     //  runtime "org.slf4j:slf4j-jdk14:$slf4j_version"
     runtime "ch.qos.logback:logback-classic:$logback_version"
     compile "org.slf4j:slf4j-api:$slf4j_version"

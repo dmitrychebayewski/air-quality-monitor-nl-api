@@ -34,9 +34,9 @@ class Routes(private val vertx: Vertx) {
             get("$COMPONENT_FORMULA_PATH/:formula").coroutineHandler { ComponentInformationHandler().pollutantComponentInfoHandler(it) }
             get("$COMPONENT_FORMULA_LIMIT_PATH/:formula").coroutineHandler { ComponentInformationHandler().pollutantComponentLimitHandler(it) }
             get(MEASUREMENTS_PATH).coroutineHandler { MeasurementsHandler().airMeasurementsHandler(it) }
-            get("$MEASUREMENT_STATION_PATH/:station_number").coroutineHandler { AggregatedMeasurementsHandler().airMeasurementsHandler(it) }
-            get("$MEASUREMENT_REGION_PATH/:region").coroutineHandler { AggregatedMeasurementsHandler().aggregatedAirMeasurementsHandler(it) }
-            get(MEASUREMENT_COMPONENTS_PATH).coroutineHandler { AggregatedComponentsMeasurementHandler().aggregatedComponentsMeasurementHandler(it) }
+            get("$MEASUREMENT_STATION_PATH/:station_number").coroutineHandler { AggregatedMeasurementsHandler(vertx).airMeasurementsHandler(it) }
+            get("$MEASUREMENT_REGION_PATH/:region").coroutineHandler { AggregatedMeasurementsHandler(vertx).aggregatedAirMeasurementsHandler(it) }
+            get(MEASUREMENT_COMPONENTS_PATH).coroutineHandler { AggregatedComponentsMeasurementHandler(vertx).aggregatedComponentsMeasurementHandler(it) }
             route("/public/*").handler(configHandlers.staticHandler)
             route().handler { configHandlers.otherPageHandler(it) }
         }

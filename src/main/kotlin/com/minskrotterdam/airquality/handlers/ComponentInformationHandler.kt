@@ -41,12 +41,13 @@ class ComponentInformationHandler {
         val response = ctx.response()
         response.isChunked = true
         val formula = ctx.pathParam("formula")
-        val pollutantInfo = ComponentInformationService().getPollutantInfo(formula).await()
-
-        response.writeAwait(Json.encode(pollutantInfo.data.limits.last()))
-        if (!response.ended()) {
-            response.endAwait()
+        try{
+            val pollutantInfo = ComponentInformationService().getPollutantInfo(formula).await()
+            response.writeAwait(Json.encode(pollutantInfo.data.limits.last()))
+        } finally {
+            if (!response.ended()) {
+                response.endAwait()
+            }
         }
-
     }
 }

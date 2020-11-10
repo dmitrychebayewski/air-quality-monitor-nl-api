@@ -29,7 +29,6 @@ object StationsCache {
         var result = stationsByLtd.prefixMap(latRound)
         while (result.isEmpty() && endInclusive > 0) {
             result = stationsByLtd.prefixMap(lat.substring(0..--endInclusive))
-            // println("${lat}.substr(${0..endInclusive}) /${lat.substring(0..endInclusive)}/ -> ${result.size} results")
         }
         val coordinates = Coordinates(lng.toDouble(), lat.toDouble())
         val candidates: MutableList<ExtData> = mutableListOf<ExtData>()

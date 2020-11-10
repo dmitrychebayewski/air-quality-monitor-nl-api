@@ -2,14 +2,14 @@ package com.minskrotterdam.airquality.handlers
 
 import com.minskrotterdam.airquality.config.HOURS_BACK
 import com.minskrotterdam.airquality.extensions.getSafeLaunchRanges
-import com.minskrotterdam.airquality.extensions.safeLaunch
+import com.minskrotterdam.airquality.models.AggregateBy
+import com.minskrotterdam.airquality.models.ext.aggregateBy
 import com.minskrotterdam.airquality.models.measurements.Data
+import com.minskrotterdam.airquality.models.metadata.STATIONS_SEGMENTED
 import com.minskrotterdam.airquality.services.MeasurementsService
 import io.vertx.core.MultiMap
+import io.vertx.core.Vertx
 import io.vertx.core.json.Json
-import io.vertx.ext.web.RoutingContext
-import io.vertx.kotlin.core.http.endAwait
-import io.vertx.kotlin.core.http.writeAwait
 import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -17,17 +17,27 @@ import ru.gildor.coroutines.retrofit.await
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 
-class MeasurementsHandler {
+abstract class BaseAggregatedMeasurementsHandler(val vertx: Vertx) {
 
-    private fun extractStationId(requestParameters: MultiMap): List<String>? {
-        val stationId = requestParameters.getAll("station_number")
-        if (stationId.isEmpty()) {
-            return emptyList()
+    private fun extractAggregatorParam(requestParameters: MultiMap): AggregateBy {
+        return when (requestParameters.get("aggr")) {
+            AggregateBy.MAX.name.toLowerCase() -> AggregateBy.MAX
+            AggregateBy.MIN.name.toLowerCase() -> AggregateBy.MIN
+            else -> return AggregateBy.AVG
         }
-        return stationId
     }
 
-    private fun extractFormula(requestParameters: MultiMap?): String {
+    private fun extractStationNumbers(regio: String?, stationId: String?): List<String>? {
+       if (regio.isNullOrEmpty()) {
+            return if (!stationId.isNullOrEmpty())
+                listOf(stationId)
+            else STATIONS_SEGMENTED["zp"]
+        } else {
+            return STATIONS_SEGMENTED.getOrDefault(regio.toLowerCase(), STATIONS_SEGMENTED["zp"])
+        }
+    }
+
+    protected fun extractFormula(requestParameters: MultiMap?): String {
         val formula = requestParameters?.get("formula")
         if (formula.isNullOrEmpty()) {
             return ""
@@ -51,26 +61,18 @@ class MeasurementsHandler {
         return startTime
     }
 
-    suspend fun airMeasurementsHandler(ctx: RoutingContext) {
-        safeLaunch(ctx) {
-            ctx.response().headers().set("Content-Type", "application/json")
-            getMeasurements(ctx)
-        }
-    }
-
-    private suspend fun getMeasurements(ctx: RoutingContext) {
-        val result = mutableListOf<Data>()
+    protected suspend fun get(requestParameters: MultiMap, regio: String?, stationId: String?): String {
+        var firstResult = mutableListOf<Data>()
         try {
-            val response = ctx.response()
-            val requestParameters = ctx.request().params()
-            val stationId = extractStationId(requestParameters)
+
             val formula = extractFormula(requestParameters)
             val endTime = extractEndTime(requestParameters)
             val startTime = extractStartTime(requestParameters)
-            response.isChunked = true
-            val firstPage = MeasurementsService().getMeasurement(stationId!!, formula, startTime, endTime, 1).await()
+            val stationIdList = extractStationNumbers(regio, stationId)
+            val firstPage = MeasurementsService().getMeasurement(stationIdList!!, formula, startTime, endTime, 1).await()
             val pagination = firstPage.pagination
-            result.addAll(firstPage.data.toMutableList())
+            val by = extractAggregatorParam(requestParameters)
+            firstResult = firstPage.data.aggregateBy(extractAggregatorParam(requestParameters))
             val mutex = Mutex()
             //When too many coroutines are waiting for server response concurrently, the server may respond with 504 code
             //Use segmentation to smaller ranges as workaround
@@ -78,20 +80,19 @@ class MeasurementsHandler {
                 it.map {
                     val job = Job()
                     CoroutineScope(Dispatchers.IO + job).async {
-                        val measurement = MeasurementsService().getMeasurement(stationId, formula, startTime,
+                        val measurement = MeasurementsService().getMeasurement(stationIdList, formula, startTime,
                                 endTime, it).await()
-                        mutex.withLock(result) {
-                            result.addAll(measurement.data)
+                        mutex.withLock(firstResult) {
+                            firstResult.addAll(measurement.data.aggregateBy(by))
                         }
                     }
                 }.awaitAll()
             }
-            response.writeAwait(Json.encode(result.groupBy { it.formula }))
-            if (!response.ended()) {
-                response.endAwait()
-            }
+            return Json.encode(firstResult.aggregateBy(by))
         } finally {
-            result.clear()
+            firstResult.clear()
         }
     }
+
+    protected fun regio(regio: String)  = vertx.sharedData().getLocalMap<String, String>(regio)
 }

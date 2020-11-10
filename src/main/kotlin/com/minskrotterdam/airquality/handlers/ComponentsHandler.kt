@@ -29,7 +29,7 @@ class ComponentsHandler {
         val firstPage = ComponentsService().getPollutants(1).await()
         val pagination = firstPage.pagination
         val mutex = Mutex()
-        mutex.withLock {
+        mutex.withLock(response) {
             response.writeAwait("[")
             val groupBy = firstPage.data.groupBy { it.formula }
             response.writeAwait(Json.encode(groupBy))
@@ -39,7 +39,7 @@ class ComponentsHandler {
                 val job = Job()
                 CoroutineScope(Dispatchers.IO + job).async {
                     val measurement = ComponentsService().getPollutants(it).await()
-                    mutex.withLock {
+                    mutex.withLock(response) {
                         response.writeAwait(",")
                         response.writeAwait(Json.encode(measurement.data.groupBy { it.formula }))
                     }
