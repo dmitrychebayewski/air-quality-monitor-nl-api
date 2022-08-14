@@ -1,4 +1,4 @@
-package com.minskrotterdam.airquality.math
+package com.minskrotterdam.airquality.flacky.math
 
 import com.minskrotterdam.airquality.cache.StationsCache
 import com.minskrotterdam.airquality.handlers.onetime.CacheHandler

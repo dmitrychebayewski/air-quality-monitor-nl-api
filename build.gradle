@@ -103,7 +103,7 @@ test {
     allJvmArgs = ['-Dio.netty.tryReflectionSetAccessible = true', '--illegal-access=warn']
     testLogging.showStandardStreams = true
     retry {
-        maxRetries = 3
+        maxRetries = 0
         maxFailures = 20
         failOnPassedAfterRetry = false
     }

@@ -1,10 +1,12 @@
-package com.minskrotterdam.airquality.services
+package com.minskrotterdam.airquality.flacky.services
 
 import com.google.gson.Gson
 import com.minskrotterdam.airquality.cache.StationsCache
 import com.minskrotterdam.airquality.handlers.onetime.CacheHandler
 import com.minskrotterdam.airquality.models.stations.Data
 import com.minskrotterdam.airquality.routes.STATIONS_PATH
+import com.minskrotterdam.airquality.services.AbstractHttpServiceIT
+import com.minskrotterdam.airquality.services.TEST_API_URL
 import io.vertx.ext.unit.TestContext
 import io.vertx.ext.unit.junit.VertxUnitRunner
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +23,7 @@ class StationsServiceIT : AbstractHttpServiceIT() {
     private val LOCATION = "amsterdam"
 
     private fun stationsUrl(): String {
-        return "${TEST_API_URL}:${port}/${STATIONS_PATH}/amsterdam"
+        return "$TEST_API_URL:${port}/${STATIONS_PATH}/amsterdam"
     }
 
     @Before

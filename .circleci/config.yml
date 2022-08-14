@@ -39,7 +39,7 @@ jobs:
           key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: gradle test
+      - run: gradle test --tests com.minskrotterdam.airquality.services.*
       - store_test_results:
           path: build/test-results
   build:
@@ -106,13 +106,13 @@ workflows:
             branches:
               only:
                 - master
-  nightly:
-    triggers:
-      - schedule:
-          cron: "0 4 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-    jobs:
-      - test
+#  nightly:
+#    triggers:
+#      - schedule:
+#          cron: "0 4 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#    jobs:
+#      - test
