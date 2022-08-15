@@ -48,7 +48,7 @@ apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: "org.gradle.test-retry"
 
 repositories {
-    jcenter()
+    mavenCentral()
 }
 
 dependencies {
